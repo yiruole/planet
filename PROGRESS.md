@@ -19,14 +19,14 @@ Multi-page HTML/CSS portfolio for Ruole Yi. Vanilla HTML — no framework. Share
 web/
 ├── index.html              ← homepage (name, physicist/artist, bio, section links)
 ├── oil-painting.html       ← 17 oil paintings with descriptions + lightbox
-├── digital-art.html        ← 2 works (YouTube embed + local .MOV with controls)
+├── digital-art.html        ← 2 works (local .MOV files with controls)
 ├── experimental-film.html  ← placeholder
 ├── photography.html        ← placeholder
 ├── music.html              ← placeholder
 ├── style.css               ← shared: nav, footer, reveal, mobile menu, page header
 ├── PROGRESS.md             ← this file
 ├── 油画/                   ← 17 JPGs (0–15, 00)
-├── 数字艺术/               ← 1 video (111.MOV); 000.mov now hosted on YouTube
+├── 数字艺术/               ← output_16x9.MOV (Work I), 111.MOV (Work II)
 └── 摄影/                   ← empty — photos not yet added
 ```
 
@@ -54,9 +54,10 @@ web/
 - Committed and pushed all files to GitHub Pages
 - Updated painting descriptions and dates
 
-### Session 5 — 2026-06-04 — Digital art update
-- Work I (000.mov): replaced local video with YouTube embed (ub4uaTgTTis)
-- Work II (111.MOV): removed `muted`/`autoplay`, added `controls` so sound plays on user interaction
+### Session 5 — 2026-06-04 — Digital art + oil painting sizing
+- Work I: switched to local file output_16x9.MOV (with controls)
+- Work II (111.MOV): removed muted/autoplay, added controls so sound plays
+- Oil painting images scaled to 65% of previous size (Layout A: max-width 559px, B/C: max-width 832px)
 
 ---
 
