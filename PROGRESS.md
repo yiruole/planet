@@ -1,13 +1,15 @@
 # Ruole Yi — Portfolio Website Progress
 
 **Last updated:** 2026-06-03  
-**Branch:** main
+**Branch:** main  
+**Remote:** https://github.com/yiruole/planet.git  
+**Live URL:** https://yiruole.github.io/planet/
 
 ---
 
 ## Project Overview
 
-Single-page HTML/CSS/JS artist portfolio for Ruole Yi. No framework — pure vanilla HTML with Google Fonts (Cormorant Garamond + DM Sans). Hosted locally; intended for eventual deployment.
+Multi-page HTML/CSS portfolio for Ruole Yi. Vanilla HTML — no framework. Shared `style.css`, each section is a separate HTML page. Pure white theme. Google Fonts: Cormorant Garamond + DM Sans.
 
 ---
 
@@ -15,66 +17,116 @@ Single-page HTML/CSS/JS artist portfolio for Ruole Yi. No framework — pure van
 
 ```
 web/
-├── index.html          ← main page (all HTML + CSS + JS in one file)
-├── PROGRESS.md         ← this file
-├── .gitignore
-├── 油画/               ← oil painting images (17 JPGs: 0–15, 00)
-├── 数字艺术/           ← digital art videos (000.mov, 111.MOV)
-├── 摄影/               ← photography (currently empty)
-└── 不要的/             ← discarded assets (not tracked in git)
+├── index.html              ← homepage (name, physicist/artist, bio, section links)
+├── oil-painting.html       ← 17 oil paintings with descriptions + lightbox
+├── digital-art.html        ← 2 videos
+├── experimental-film.html  ← placeholder (was "Moving Image")
+├── photography.html        ← placeholder
+├── music.html              ← placeholder
+├── style.css               ← shared: nav, footer, reveal, mobile menu, page header
+├── PROGRESS.md             ← this file
+├── chat-log-2026-06-03.md  ← full session transcript
+├── 油画/                   ← 17 JPGs (0–15, 00)
+├── 数字艺术/               ← 2 videos (000.mov, 111.MOV)
+├── 摄影/                   ← empty — photos not yet added
+└── 不要的/                 ← discarded (not tracked)
 ```
 
 ---
 
 ## Completed
 
-### Session 1 — Initial build (before 2026-06-03)
-- Dark-themed single-page portfolio with grain overlay, custom gold cursor
-- Fixed nav with scroll-triggered frosted glass effect
-- Hero section with animated name reveal
-- Mixed gallery section (oil paintings + moving image)
-- About section with placeholder bio
-- Contact section (email + Instagram)
-- Lightbox for image zoom
-- Mobile responsive with hamburger menu
+### Session 1 — 2026-05-29 — Initial launch
+- Single-page portfolio deployed to GitHub Pages
 
-### Session 2 — 2026-06-03 — Full layout restructure
-- **Restructured into 6 independent sections** with proper `id` anchors:
-  - `#about` — full artist bio (right after hero)
-  - `#oil-painting` — dedicated section for oil works
-  - `#digital-art` — dedicated section for video works
-  - `#moving-image` — placeholder
-  - `#photography` — placeholder
-  - `#music` — placeholder
-- **Updated navigation** — 6 links (Oil Painting · Digital Art · Moving Image · Photography · Music · About); mobile hamburger updated to match
-- **Artist bio rewritten** — original Chinese bio translated to natural English; split into two-column layout: large pull quote on left (sticky on desktop), body paragraphs on right; last paragraph styled large italic
-- **Oil Painting section** — masonry grid, all 17 images from `油画/` folder, lightbox on click
-- **Digital Art section** — 2-column video grid, both `.mov` files from `数字艺术/`, autoplay muted loop
-- **Placeholder sections** — Moving Image, Photography, Music each show a tasteful "Works forthcoming" state (horizontal rule + italic text)
-- **Removed broken references** — old root-level `IMG_*.jpg` and screen recording (deleted files) no longer referenced
-- Section numbering labels (01–05) for work sections
+### Session 2 — 2026-06-03 (earlier) — Layout overhaul
+- Full artist bio written and translated to English
+- 17 oil paintings imported, 2 digital art videos imported
+- Multi-section single-page layout with lightbox
+
+### Session 3 — 2026-06-03 — Full multi-page rebuild
+
+**Architecture**
+- Converted from single-page to multi-page (6 HTML pages + shared style.css)
+- Each section lives at its own URL (e.g. `/oil-painting.html`)
+
+**Design overhaul**
+- Full white theme (`--bg: #fff`, `--text: #111`)
+- Removed grain overlay and custom cursor
+- Navigation: fixed frosted-glass on scroll, active-link underline
+- All pages share: nav, mobile hamburger menu, footer, scroll reveal animations
+
+**Homepage (index.html)**
+- Name in large Cormorant Garamond
+- "Physicist · Artist" subtitle
+- Full artist bio in English
+- Section links at bottom
+
+**Oil Painting page (oil-painting.html)**
+- 17 paintings in alternating A/B/C layouts (centered / image-left / image-right)
+- Ghost numbers (01–17) as subtle background typography
+- Lightbox on image click (white overlay)
+- 13 paintings have full translated English descriptions
+- 4 paintings (10–13 / 9.jpg, 10.jpg, 11.jpg, 12.jpg) — no descriptions yet
+
+**Navigation rename**
+- "Moving Image" → "Experimental Film" across all pages
+
+**Digital Art (digital-art.html)**
+- 2-column video grid, both .mov files
+
+**Placeholder pages**
+- experimental-film.html, photography.html, music.html — "Works forthcoming."
+
+### Session 4 — 2026-06-03 (this session)
+- Committed and pushed all session 3 files to GitHub (previously untracked)
+- Updated PROGRESS.md and chat-log
+
+---
+
+## Painting Descriptions Status
+
+| # | File | Title | Description |
+|---|------|-------|-------------|
+| 01 | 0.jpg | The Bonds of Id | ✓ |
+| 02 | 1.jpg | Mirror — Balance | ✓ |
+| 03 | 2.jpg | The Non-Existent Atom | ✓ |
+| 04 | 3.jpg | Mental Breakdown Caused by Uncertainty | ✓ |
+| 05 | 4.jpg | Anxiety Cured My Existential Emptiness | ✓ |
+| 06 | 5.jpg | Structure Exceeds Appearance | ✓ |
+| 07 | 6.jpg | Threshold: The Residual Darkness at the Edge of Jouissance | ✓ |
+| 08 | 7.jpg | Untitled | (no description) |
+| 09 | 8.jpg | Untitled | ✓ |
+| 10 | 9.jpg | Untitled | ✗ needed |
+| 11 | 10.jpg | Untitled | ✗ needed |
+| 12 | 11.jpg | Untitled | ✗ needed |
+| 13 | 12.jpg | Untitled | ✗ needed |
+| 14 | 13.jpg | Overhead | ✓ |
+| 15 | 14.jpg | The Summit | ✓ |
+| 16 | 15.jpg | Untitled | ✓ |
+| 17 | 00.jpg | The Room of the Split Subject | ✓ |
 
 ---
 
 ## Not Yet Done
 
-- [ ] Add titles to individual oil paintings (currently all labeled "Oil on canvas")
-- [ ] Fill in actual Instagram URL in Contact section (`href` is a placeholder)
-- [ ] Populate Moving Image section with video content
-- [ ] Populate Photography section (摄影/ folder is empty)
-- [ ] Populate Music section (no audio files yet)
-- [ ] Deploy to a live URL (no hosting configured)
-- [ ] Add `<meta og:*>` social preview tags
+- [ ] Descriptions + titles for paintings 10–13 (9.jpg–12.jpg)
+- [ ] Title + description for painting 08 (7.jpg, currently "Untitled" with no text)
+- [ ] Real Instagram URL (currently placeholder `href="#"`)
+- [ ] Populate photography section (摄影/ folder is empty)
+- [ ] Populate experimental film section
+- [ ] Populate music section
+- [ ] Social preview meta tags (og:image, og:description, twitter:card)
 - [ ] Favicon
+- [ ] Test video autoplay on iOS Safari
 
 ---
 
-## Known Issues / Notes
+## Known Issues
 
-- **Chinese folder names** (`油画/`, `数字艺术/`) in `src` attributes — work fine in modern browsers on macOS (UTF-8 filesystem), but may need URL-encoding (`%E6%B2%B9%E7%94%BB/` etc.) if deployed to a server with non-UTF-8 path handling
-- **Video autoplay** — `数字艺术/000.mov` and `111.MOV` use `autoplay muted loop`; Safari on iOS should respect this but test on device
-- **Hero background** — currently pure dark (the original hero images were deleted/reorganized); could add one painting as a subtle parallax background later
-- **摄影 folder** is empty — Photography section shows placeholder until images are added
+- Chinese folder names (`油画/`, `数字艺术/`) work locally but may need URL-encoding on some servers
+- Video autoplay: untested on iOS Safari
+- `.mov` files — consider converting to `.mp4` for broader browser compatibility
 
 ---
 
@@ -82,10 +134,10 @@ web/
 
 | Token | Value |
 |---|---|
-| `--bg` | `#090f17` |
-| `--bg-2` | `#0a141e` |
-| `--gold` | `#c4a35a` |
-| `--text` | `#ede9e3` |
-| `--muted` | `#6e8494` |
-| Display font | Cormorant Garamond (Google Fonts) |
-| Body font | DM Sans (Google Fonts) |
+| `--bg` | `#ffffff` |
+| `--text` | `#111111` |
+| `--muted` | `#888888` |
+| `--faint` | `#e2e2e2` |
+| Display font | Cormorant Garamond 300 |
+| Body font | DM Sans 300/400 |
+| Description color | `#555` |

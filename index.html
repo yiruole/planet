@@ -3,873 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ruole Yi — Artist</title>
-  <meta name="description" content="Ruole Yi — Artist working across oil painting, digital art, moving image, photography, and music.">
-
+  <title>Ruole Yi</title>
+  <meta name="description" content="Ruole Yi — Physicist and artist.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Cormorant:ital,wght@0,300;1,300&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* ─── Variables ─────────────────────────────────────────────── */
-    :root {
-      --bg:        #090f17;
-      --bg-2:      #0a141e;
-      --bg-3:      #0f1e2c;
-      --gold:      #c4a35a;
-      --gold-lt:   #dfc07a;
-      --pink:      #c96a8f;
-      --text:      #ede9e3;
-      --muted:     #6e8494;
-      --border:    rgba(196,163,90,.14);
-      --ease-out:  cubic-bezier(.22,.61,.36,1);
-      --ease-expo: cubic-bezier(.16,1,.3,1);
-      --font-d:    'Cormorant Garamond', serif;
-      --font-b:    'DM Sans', sans-serif;
-    }
-
-    /* ─── Reset ─────────────────────────────────────────────────── */
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior:smooth; overflow-x:hidden; }
-    body {
-      background:var(--bg);
-      color:var(--text);
-      font-family:var(--font-b);
-      font-weight:300;
-      line-height:1.7;
-      overflow-x:hidden;
-      cursor:none;
-    }
-    img { display:block; width:100%; }
-    a { color:inherit; text-decoration:none; }
-
-    /* ─── Grain overlay ──────────────────────────────────────────── */
-    body::after {
-      content:'';
-      position:fixed; inset:0;
-      pointer-events:none; z-index:9990;
-      opacity:.035;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      background-size:200px 200px;
-      mix-blend-mode:overlay;
-    }
-
-    /* ─── Custom cursor ──────────────────────────────────────────── */
-    .c-dot {
-      position:fixed; top:0; left:0; width:5px; height:5px;
-      background:var(--gold); border-radius:50%;
-      transform:translate(-50%,-50%);
-      pointer-events:none; z-index:10000;
-    }
-    .c-ring {
-      position:fixed; top:0; left:0; width:38px; height:38px;
-      border:1px solid rgba(196,163,90,.55); border-radius:50%;
-      transform:translate(-50%,-50%);
-      pointer-events:none; z-index:9999;
-      transition:width .4s var(--ease-expo), height .4s var(--ease-expo),
-                 border-color .3s, opacity .25s;
-    }
-    .c-ring.big { width:76px; height:76px; border-color:rgba(201,106,143,.6); }
-
-    /* ─── Navigation ─────────────────────────────────────────────── */
-    nav {
-      position:fixed; top:0; left:0; right:0; z-index:1000;
-      padding:28px 52px;
-      display:flex; align-items:center; justify-content:space-between;
-      transition:padding .35s var(--ease-out), background .45s, backdrop-filter .45s;
-    }
-    nav.stuck {
-      padding:16px 52px;
-      background:rgba(9,15,23,.88);
-      backdrop-filter:blur(22px);
-      -webkit-backdrop-filter:blur(22px);
-      border-bottom:1px solid var(--border);
-    }
-    .nav-logo {
-      font-family:var(--font-d);
-      font-size:1.35rem; font-weight:400; letter-spacing:.2em;
-      color:var(--text); position:relative;
-    }
-    .nav-logo::after {
-      content:''; position:absolute; bottom:-3px; left:0;
-      width:0; height:1px; background:var(--gold);
-      transition:width .35s var(--ease-out);
-    }
-    .nav-logo:hover::after { width:100%; }
-
-    .nav-links { display:flex; gap:28px; list-style:none; }
-    .nav-links a {
-      font-size:.65rem; font-weight:400; letter-spacing:.2em;
-      text-transform:uppercase; color:var(--muted);
-      position:relative; transition:color .3s;
-    }
-    .nav-links a::after {
-      content:''; position:absolute; bottom:-3px; left:0;
-      width:0; height:1px; background:var(--gold);
-      transition:width .3s var(--ease-out);
-    }
-    .nav-links a:hover { color:var(--text); }
-    .nav-links a:hover::after { width:100%; }
-
-    /* ─── Hamburger ──────────────────────────────────────────────── */
-    .burger {
-      display:none; flex-direction:column; gap:5px;
-      background:none; border:none; cursor:none; padding:4px;
-    }
-    .burger span {
-      display:block; width:22px; height:1px;
-      background:var(--text); transform-origin:center;
-      transition:transform .35s var(--ease-out), opacity .25s;
-    }
-    .burger.open span:nth-child(1) { transform:translateY(6px) rotate(45deg); }
-    .burger.open span:nth-child(2) { opacity:0; transform:scaleX(0); }
-    .burger.open span:nth-child(3) { transform:translateY(-6px) rotate(-45deg); }
-
-    /* ─── Mobile nav ─────────────────────────────────────────────── */
-    .m-nav {
-      position:fixed; inset:0; background:var(--bg); z-index:998;
-      display:flex; flex-direction:column;
-      align-items:center; justify-content:center; gap:32px;
-      transform:translateX(100%);
-      transition:transform .55s var(--ease-expo);
-    }
-    .m-nav.open { transform:translateX(0); }
-    .m-nav a {
-      font-family:var(--font-d);
-      font-size:clamp(1.9rem,7vw,3.4rem);
-      font-weight:300; color:var(--text);
-      letter-spacing:.04em; transition:color .3s;
-    }
-    .m-nav a:hover { color:var(--gold); }
-
-    /* ─── Hero ───────────────────────────────────────────────────── */
     #hero {
-      position:relative; height:100vh; min-height:580px;
-      display:flex; align-items:center;
-      padding:0 72px; overflow:hidden;
+      min-height:100vh;
+      padding:140px 64px 100px;
+      display:flex; flex-direction:column; justify-content:center;
     }
-    #hero::before {
-      content:'';
-      position:absolute; inset:0;
-      background:radial-gradient(ellipse at 65% 45%, rgba(196,163,90,.05) 0%, transparent 68%);
-      pointer-events:none;
-    }
-    .hero-body { position:relative; z-index:1; }
-    .hero-eyebrow {
-      font-size:.66rem; letter-spacing:.4em; text-transform:uppercase;
-      color:var(--gold); margin-bottom:28px;
-      opacity:0; transform:translateY(8px);
-      animation:fadeup .9s var(--ease-out) .1s forwards;
-    }
-    .hero-h1 {
+    .hero-inner { max-width:860px; }
+    .hero-name {
       font-family:var(--font-d);
-      font-size:clamp(5rem,12vw,11rem);
-      font-weight:300; line-height:.88;
-      letter-spacing:-.025em;
+      font-size:clamp(5rem,13vw,12rem);
+      font-weight:300; line-height:.85; letter-spacing:-.03em;
+      margin-bottom:20px;
     }
-    .hero-h1 .ln { display:block; overflow:hidden; }
-    .hero-h1 .wrd {
-      display:inline-block;
-      opacity:0; transform:translateY(108%);
+    .hero-name em { font-style:italic; }
+    .hero-roles {
+      font-size:.68rem; letter-spacing:.36em;
+      text-transform:uppercase; color:var(--muted);
+      margin-bottom:72px;
     }
-    .hero-h1 .wrd.go { animation:slideup 1.05s var(--ease-expo) forwards; }
-    .hero-h1 .dim { color:rgba(237,233,227,.3); font-style:italic; }
-    .hero-sub {
-      font-family:var(--font-d);
-      font-size:clamp(.85rem,1.6vw,1.15rem);
-      font-style:italic; font-weight:300;
-      color:var(--muted); margin-top:32px; letter-spacing:.1em;
-      opacity:0;
-      animation:fadeup .9s var(--ease-out) 1.35s forwards;
+    .hero-rule {
+      width:56px; height:1px;
+      background:var(--faint); margin-bottom:56px;
     }
-    .hero-scroll {
-      position:absolute; right:52px; bottom:52px; z-index:2;
-      display:flex; flex-direction:column; align-items:center; gap:14px;
-      opacity:0;
-      animation:fadeup .9s var(--ease-out) 2.1s forwards;
-    }
-    .hero-scroll span {
-      font-size:.6rem; letter-spacing:.32em; text-transform:uppercase;
-      color:var(--muted); writing-mode:vertical-rl;
-    }
-    .scroll-bar {
-      width:1px; height:58px;
-      background:linear-gradient(to bottom, var(--gold), transparent);
-      animation:pulse 2.2s ease-in-out infinite;
-    }
-
-    @keyframes fadeup  { to { opacity:1; transform:translateY(0); } }
-    @keyframes slideup { to { opacity:1; transform:translateY(0); } }
-    @keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    /* ─── Divider ────────────────────────────────────────────────── */
-    .div-gold {
-      height:1px;
-      background:linear-gradient(90deg, transparent, var(--gold), transparent);
-      opacity:.22;
-    }
-
-    /* ─── Reveal ─────────────────────────────────────────────────── */
-    .rv {
-      opacity:0; transform:translateY(34px);
-      transition:opacity .95s var(--ease-expo), transform .95s var(--ease-expo);
-    }
-    .rv.on { opacity:1; transform:translateY(0); }
-    .rv.d1 { transition-delay:.08s; }
-    .rv.d2 { transition-delay:.16s; }
-    .rv.d3 { transition-delay:.24s; }
-    .rv.d4 { transition-delay:.32s; }
-    .rv.d5 { transition-delay:.40s; }
-
-    /* ─── Shared section atoms ───────────────────────────────────── */
-    .s-label {
-      display:inline-flex; align-items:center; gap:14px;
-      font-size:.63rem; letter-spacing:.34em; text-transform:uppercase;
-      color:var(--gold); margin-bottom:16px;
-    }
-    .s-label::before {
-      content:''; display:block; width:26px; height:1px; background:var(--gold);
-    }
-    .s-title {
-      font-family:var(--font-d);
-      font-size:clamp(2.6rem,5vw,5rem);
-      font-weight:300; line-height:1; letter-spacing:-.025em;
-    }
-
-    /* ─── About / Bio ────────────────────────────────────────────── */
-    #about {
-      padding:140px 72px;
-      background:var(--bg);
-    }
-    .about-inner { max-width:1360px; margin:0 auto; }
-    .about-header { margin-bottom:72px; }
-    .bio-grid {
-      display:grid;
-      grid-template-columns:1fr 1.7fr;
-      gap:88px;
-      align-items:start;
-    }
-    .bio-left { position:sticky; top:120px; }
     .bio-statement {
       font-family:var(--font-d);
-      font-size:clamp(1.6rem,2.8vw,2.5rem);
+      font-size:clamp(1.5rem,2.8vw,2.3rem);
       font-weight:300; font-style:italic;
-      line-height:1.45; color:var(--text);
-      letter-spacing:-.01em;
-      padding-left:22px;
-      border-left:1px solid rgba(196,163,90,.4);
+      line-height:1.45; margin-bottom:36px;
     }
     .bio-body {
-      font-size:.9rem; color:var(--muted);
-      line-height:2;
+      font-size:.9rem; color:#666;
+      line-height:2; max-width:680px;
     }
-    .bio-body p + p { margin-top:26px; }
-    .bio-last {
+    .bio-body p + p { margin-top:22px; }
+    .bio-close {
       font-family:var(--font-d);
-      font-size:clamp(1.2rem,2vw,1.75rem);
-      font-weight:300; font-style:italic;
-      color:rgba(237,233,227,.65);
-      margin-top:40px; line-height:1.5;
+      font-size:clamp(1.1rem,2vw,1.6rem);
+      font-style:italic; font-weight:300;
+      color:#bbb; margin-top:40px; line-height:1.55;
     }
-    .bio-sig {
+    .section-row {
+      margin-top:80px; padding-top:40px;
+      border-top:1px solid var(--faint);
+      display:flex; gap:40px; flex-wrap:wrap; align-items:baseline;
+    }
+    .section-row-label {
+      font-size:.6rem; letter-spacing:.28em;
+      text-transform:uppercase; color:var(--muted);
+    }
+    .section-row-links { display:flex; gap:32px; flex-wrap:wrap; }
+    .section-row-links a {
       font-family:var(--font-d);
-      font-size:1.9rem; font-style:italic; font-weight:300;
-      margin-top:52px; letter-spacing:.05em;
-      color:rgba(237,233,227,.35);
+      font-size:clamp(1rem,1.5vw,1.3rem);
+      font-weight:300; transition:opacity .3s;
     }
-
-    /* ─── Work sections ──────────────────────────────────────────── */
-    .work-section {
-      padding:130px 72px;
-    }
-    .work-section.alt { background:var(--bg-2); }
-    .work-inner { max-width:1360px; margin:0 auto; }
-    .sec-header { margin-bottom:72px; }
-
-    /* ─── Gallery / masonry ──────────────────────────────────────── */
-    .gal-grid {
-      columns:3; column-gap:16px;
-    }
-    .gal-item {
-      break-inside:avoid; margin-bottom:16px;
-      position:relative; overflow:hidden;
-      cursor:none;
-    }
-    .gal-item img {
-      transition:transform .8s var(--ease-expo), filter .5s;
-      filter:brightness(.88) saturate(.82);
-    }
-    .gal-item:hover img {
-      transform:scale(1.05);
-      filter:brightness(1) saturate(1);
-    }
-    .gal-over {
-      position:absolute; inset:0;
-      background:linear-gradient(to top, rgba(9,15,23,.85) 0%, transparent 55%);
-      opacity:0; transition:opacity .5s;
-      display:flex; flex-direction:column;
-      justify-content:flex-end; padding:20px 22px;
-    }
-    .gal-item:hover .gal-over { opacity:1; }
-    .gal-meta {
-      font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
-      color:var(--gold);
-      transform:translateY(8px);
-      transition:transform .4s var(--ease-expo);
-    }
-    .gal-item:hover .gal-meta { transform:translateY(0); }
-
-    /* ─── Video grid ─────────────────────────────────────────────── */
-    .vid-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:16px;
-    }
-    .vid-item {
-      background:var(--bg-3); overflow:hidden; cursor:none;
-    }
-    .vid-item video {
-      width:100%; max-height:500px;
-      object-fit:cover; display:block;
-    }
-    .vid-foot {
-      padding:16px 20px;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .vid-title {
-      font-family:var(--font-d);
-      font-size:1.1rem; font-style:italic; font-weight:300;
-    }
-    .vid-tag {
-      font-size:.61rem; letter-spacing:.22em;
-      text-transform:uppercase; color:var(--pink);
-    }
-
-    /* ─── Empty / forthcoming state ─────────────────────────────── */
-    .empty-state {
-      padding:72px 0;
-      display:flex; align-items:center; gap:40px;
-    }
-    .empty-state::before,
-    .empty-state::after {
-      content:''; flex:1; height:1px;
-      background:var(--border);
-    }
-    .empty-text {
-      font-family:var(--font-d);
-      font-size:1.05rem; font-style:italic;
-      color:var(--muted); letter-spacing:.1em;
-      white-space:nowrap;
-    }
-
-    /* ─── Contact ────────────────────────────────────────────────── */
-    #contact {
-      padding:160px 72px;
-      background:var(--bg-2);
-      text-align:center;
-      position:relative; overflow:hidden;
-    }
-    #contact::before {
-      content:'CONTACT';
-      position:absolute; top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      font-family:var(--font-d);
-      font-size:clamp(7rem,18vw,18rem);
-      font-weight:300; letter-spacing:.12em;
-      color:rgba(196,163,90,.03);
-      white-space:nowrap; user-select:none; pointer-events:none;
-    }
-    .ct-inner { position:relative; z-index:1; max-width:540px; margin:0 auto; }
-    .ct-title {
-      font-family:var(--font-d);
-      font-size:clamp(3rem,7vw,6rem);
-      font-weight:300; line-height:.95;
-      letter-spacing:-.03em; margin-bottom:36px;
-    }
-    .ct-title em { font-style:italic; color:var(--gold); }
-    .ct-sub {
-      font-size:.88rem; color:var(--muted); line-height:1.85;
-      letter-spacing:.03em; margin-bottom:60px;
-    }
-    .ct-links {
-      display:flex; align-items:center;
-      justify-content:center; gap:20px; flex-wrap:wrap;
-    }
-    .ct-btn {
-      display:inline-flex; align-items:center; gap:10px;
-      padding:14px 32px;
-      border:1px solid var(--border); color:var(--text);
-      font-size:.7rem; letter-spacing:.2em; text-transform:uppercase;
-      position:relative; overflow:hidden;
-      transition:color .4s, border-color .4s;
-    }
-    .ct-btn::before {
-      content:''; position:absolute; inset:0;
-      background:var(--gold);
-      transform:translateX(-102%);
-      transition:transform .45s var(--ease-expo);
-      z-index:0;
-    }
-    .ct-btn:hover { color:var(--bg); border-color:var(--gold); }
-    .ct-btn:hover::before { transform:translateX(0); }
-    .ct-btn span, .ct-btn svg { position:relative; z-index:1; }
-    .ct-btn svg { width:15px; height:15px; flex-shrink:0; }
-
-    /* ─── Footer ─────────────────────────────────────────────────── */
-    footer {
-      padding:28px 72px;
-      border-top:1px solid var(--border);
-      background:var(--bg);
-      display:flex; align-items:center;
-      justify-content:space-between; flex-wrap:wrap; gap:12px;
-    }
-    .ft-copy { font-size:.7rem; color:var(--muted); letter-spacing:.1em; }
-    .ft-tag {
-      font-family:var(--font-d);
-      font-size:.82rem; font-style:italic; color:var(--muted);
-    }
-
-    /* ─── Lightbox ───────────────────────────────────────────────── */
-    .lb {
-      position:fixed; inset:0;
-      background:rgba(9,15,23,.97);
-      z-index:10001; display:flex;
-      align-items:center; justify-content:center;
-      padding:52px;
-      opacity:0; pointer-events:none;
-      transition:opacity .4s var(--ease-out);
-    }
-    .lb.on { opacity:1; pointer-events:all; }
-    .lb-img {
-      max-width:100%; max-height:100%;
-      object-fit:contain;
-      transform:scale(.93);
-      transition:transform .5s var(--ease-expo);
-    }
-    .lb.on .lb-img { transform:scale(1); }
-    .lb-close {
-      position:absolute; top:28px; right:48px;
-      background:none; border:none; cursor:none;
-      color:var(--text); font-size:.66rem;
-      letter-spacing:.2em; text-transform:uppercase;
-      display:flex; align-items:center; gap:10px;
-      transition:color .3s;
-    }
-    .lb-close:hover { color:var(--gold); }
-    .lb-close svg { width:18px; height:18px; }
-
-    /* ─── Responsive ─────────────────────────────────────────────── */
-    @media (max-width:1200px) {
-      .bio-grid { grid-template-columns:1fr; gap:52px; }
-      .bio-left { position:static; }
-      .gal-grid { columns:2; }
-      .work-section { padding:100px 52px; }
-      #about { padding:100px 52px; }
-    }
-    @media (max-width:768px) {
-      nav { padding:20px 24px; }
-      nav.stuck { padding:14px 24px; }
-      .nav-links { display:none; }
-      .burger { display:flex; }
-
-      #hero { padding:0 24px; }
-      .hero-scroll { display:none; }
-
-      #about { padding:80px 24px; }
-      .work-section { padding:80px 24px; }
-      .gal-grid { columns:1; }
-      .vid-grid { grid-template-columns:1fr; }
-
-      #contact { padding:100px 24px; }
-      .ct-links { flex-direction:column; align-items:stretch; }
-      .ct-btn { justify-content:center; }
-
-      footer { padding:24px; flex-direction:column; text-align:center; }
-
-      body { cursor:auto; }
-      .c-dot, .c-ring { display:none; }
+    .section-row-links a:hover { opacity:.4; }
+    @media (max-width:900px) {
+      #hero { padding:110px 24px 80px; }
+      .section-row { gap:20px; }
+      .section-row-links { gap:18px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Custom cursor -->
-<div class="c-dot" id="cdot"></div>
-<div class="c-ring" id="cring"></div>
-
-<!-- Lightbox -->
-<div class="lb" id="lb">
-  <button class="lb-close" id="lbClose">
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
-      <line x1="2" y1="2" x2="18" y2="18"/><line x1="18" y1="2" x2="2" y2="18"/>
-    </svg>
-    Close
-  </button>
-  <img class="lb-img" id="lbImg" src="" alt="">
-</div>
-
-<!-- Navigation -->
 <nav id="nav">
-  <a href="#" class="nav-logo">RY</a>
+  <a href="index.html" class="nav-logo">Ruole Yi</a>
   <ul class="nav-links">
-    <li><a href="#oil-painting">Oil Painting</a></li>
-    <li><a href="#digital-art">Digital Art</a></li>
-    <li><a href="#moving-image">Moving Image</a></li>
-    <li><a href="#photography">Photography</a></li>
-    <li><a href="#music">Music</a></li>
-    <li><a href="#about">About</a></li>
+    <li><a href="oil-painting.html">Oil Painting</a></li>
+    <li><a href="digital-art.html">Digital Art</a></li>
+    <li><a href="experimental-film.html">Experimental Film</a></li>
+    <li><a href="photography.html">Photography</a></li>
+    <li><a href="music.html">Music</a></li>
   </ul>
   <button class="burger" id="burger" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
 </nav>
-
-<!-- Mobile nav -->
 <div class="m-nav" id="mnav">
-  <a href="#oil-painting"  data-close>Oil Painting</a>
-  <a href="#digital-art"   data-close>Digital Art</a>
-  <a href="#moving-image"  data-close>Moving Image</a>
-  <a href="#photography"   data-close>Photography</a>
-  <a href="#music"         data-close>Music</a>
-  <a href="#about"         data-close>About</a>
-  <a href="#contact"       data-close>Contact</a>
+  <a href="oil-painting.html" data-close>Oil Painting</a>
+  <a href="digital-art.html" data-close>Digital Art</a>
+  <a href="experimental-film.html" data-close>Experimental Film</a>
+  <a href="photography.html" data-close>Photography</a>
+  <a href="music.html" data-close>Music</a>
 </div>
 
-<!-- ─── Hero ─────────────────────────────────────────────────────── -->
 <section id="hero">
-  <div class="hero-body">
-    <p class="hero-eyebrow">Artist &nbsp;·&nbsp; Researcher</p>
-    <h1 class="hero-h1">
-      <span class="ln"><span class="wrd" data-d="320">Ruole</span></span>
-      <span class="ln"><span class="wrd dim" data-d="580">Yi</span></span>
-    </h1>
-    <p class="hero-sub">Oil Painting &nbsp;&middot;&nbsp; Digital Art &nbsp;&middot;&nbsp; Moving Image &nbsp;&middot;&nbsp; Photography &nbsp;&middot;&nbsp; Music</p>
-  </div>
-  <div class="hero-scroll">
-    <div class="scroll-bar"></div>
-    <span>Scroll</span>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── About ────────────────────────────────────────────────────── -->
-<section id="about">
-  <div class="about-inner">
-    <div class="about-header">
-      <div class="s-label rv">About the Artist</div>
-      <h2 class="s-title rv d1">Ruole Yi</h2>
+  <div class="hero-inner">
+    <h1 class="hero-name rv">Ruole<br><em>Yi</em></h1>
+    <p class="hero-roles rv d1">Physicist &nbsp;·&nbsp; Artist</p>
+    <div class="hero-rule rv d2"></div>
+    <p class="bio-statement rv d2">I was once a researcher in high-energy physics.</p>
+    <div class="bio-body rv d3">
+      <p>For a long time, I tried to understand how the world works through theorems. Yet the closer I approached the fundamental level, the more I found that the world is not built on certain propositions. This became the starting point of my practice.</p>
+      <p>My practice combines painting, moving image, and digital media, navigating between particle physics, psychoanalysis, and philosophy. I am drawn to those things that exist at the boundaries of language: experiences that resist precise articulation, and presences that are always there yet can never be directly seen.</p>
+      <p>I am especially fascinated by those moments suspended between humor and fear. When the world begins to seem absurd, people tend to reach for meaning; once meaning is established, it exposes new absurdities. My work often carries this dark ironic undertone. It neither celebrates rationality nor glorifies madness, but pushes both simultaneously toward their limits. What the viewer faces is not a stable reality, but a system perpetually generating and dissolving itself.</p>
     </div>
-
-    <div class="bio-grid">
-      <div class="bio-left rv d2">
-        <p class="bio-statement">I was once a researcher in high-energy physics.</p>
-      </div>
-
-      <div class="bio-right">
-        <div class="bio-body rv d3">
-          <p>For a long time, I tried to understand how the world works through theorems. Yet the closer I approached the fundamental level, the more I found that the world is not built on certain propositions. This became the starting point of my practice.</p>
-          <p>My practice combines painting, moving image, and digital media, navigating between particle physics, psychoanalysis, and philosophy. I am drawn to those things that exist at the boundaries of language: experiences that resist precise articulation, and presences that are always there yet can never be directly seen.</p>
-          <p>I am especially fascinated by those moments suspended between humor and fear. When the world begins to seem absurd, people tend to reach for meaning; once meaning is established, it exposes new absurdities. My work often carries this dark ironic undertone. It neither celebrates rationality nor glorifies madness, but pushes both simultaneously toward their limits. What the viewer faces is not a stable reality, but a system perpetually generating and dissolving itself.</p>
-        </div>
-        <p class="bio-last rv d4">There, order and chaos are no longer opposites.<br>Reality itself begins to take on the quality of a dream.</p>
-        <div class="bio-sig rv d5">Ruole Yi</div>
+    <p class="bio-close rv d4">There, order and chaos are no longer opposites.<br>Reality itself begins to take on the quality of a dream.</p>
+    <div class="section-row rv d4">
+      <span class="section-row-label">Work</span>
+      <div class="section-row-links">
+        <a href="oil-painting.html">Oil Painting</a>
+        <a href="digital-art.html">Digital Art</a>
+        <a href="experimental-film.html">Experimental Film</a>
+        <a href="photography.html">Photography</a>
+        <a href="music.html">Music</a>
       </div>
     </div>
   </div>
 </section>
 
-<div class="div-gold"></div>
-
-<!-- ─── Oil Painting ──────────────────────────────────────────────── -->
-<section id="oil-painting" class="work-section alt">
-  <div class="work-inner">
-    <div class="sec-header">
-      <div class="s-label rv">01</div>
-      <h2 class="s-title rv d1">Oil Painting</h2>
-    </div>
-
-    <div class="gal-grid">
-
-      <div class="gal-item rv" data-img="油画/0.jpg">
-        <img src="油画/0.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/1.jpg">
-        <img src="油画/1.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d2" data-img="油画/2.jpg">
-        <img src="油画/2.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv" data-img="油画/3.jpg">
-        <img src="油画/3.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/4.jpg">
-        <img src="油画/4.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d2" data-img="油画/5.jpg">
-        <img src="油画/5.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv" data-img="油画/6.jpg">
-        <img src="油画/6.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/7.jpg">
-        <img src="油画/7.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d2" data-img="油画/8.jpg">
-        <img src="油画/8.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv" data-img="油画/9.jpg">
-        <img src="油画/9.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/10.jpg">
-        <img src="油画/10.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d2" data-img="油画/11.jpg">
-        <img src="油画/11.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv" data-img="油画/12.jpg">
-        <img src="油画/12.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/13.jpg">
-        <img src="油画/13.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d2" data-img="油画/14.jpg">
-        <img src="油画/14.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv" data-img="油画/15.jpg">
-        <img src="油画/15.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-      <div class="gal-item rv d1" data-img="油画/00.jpg">
-        <img src="油画/00.jpg" alt="Oil painting" loading="lazy">
-        <div class="gal-over"><div class="gal-meta">Oil on Canvas</div></div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── Digital Art ────────────────────────────────────────────────── -->
-<section id="digital-art" class="work-section">
-  <div class="work-inner">
-    <div class="sec-header">
-      <div class="s-label rv">02</div>
-      <h2 class="s-title rv d1">Digital Art</h2>
-    </div>
-
-    <div class="vid-grid">
-      <div class="vid-item rv">
-        <video src="数字艺术/000.mov"
-               muted autoplay loop playsinline preload="metadata"></video>
-        <div class="vid-foot">
-          <div class="vid-title">Work I</div>
-          <div class="vid-tag">Digital Art</div>
-        </div>
-      </div>
-      <div class="vid-item rv d1">
-        <video src="数字艺术/111.MOV"
-               muted autoplay loop playsinline preload="metadata"></video>
-        <div class="vid-foot">
-          <div class="vid-title">Work II</div>
-          <div class="vid-tag">Digital Art</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── Moving Image ───────────────────────────────────────────────── -->
-<section id="moving-image" class="work-section alt">
-  <div class="work-inner">
-    <div class="sec-header">
-      <div class="s-label rv">03</div>
-      <h2 class="s-title rv d1">Moving Image</h2>
-    </div>
-    <div class="empty-state rv d2">
-      <span class="empty-text">Works forthcoming</span>
-    </div>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── Photography ────────────────────────────────────────────────── -->
-<section id="photography" class="work-section">
-  <div class="work-inner">
-    <div class="sec-header">
-      <div class="s-label rv">04</div>
-      <h2 class="s-title rv d1">Photography</h2>
-    </div>
-    <div class="empty-state rv d2">
-      <span class="empty-text">Works forthcoming</span>
-    </div>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── Music ──────────────────────────────────────────────────────── -->
-<section id="music" class="work-section alt">
-  <div class="work-inner">
-    <div class="sec-header">
-      <div class="s-label rv">05</div>
-      <h2 class="s-title rv d1">Music</h2>
-    </div>
-    <div class="empty-state rv d2">
-      <span class="empty-text">Works forthcoming</span>
-    </div>
-  </div>
-</section>
-
-<div class="div-gold"></div>
-
-<!-- ─── Contact ───────────────────────────────────────────────────── -->
-<section id="contact">
-  <div class="ct-inner">
-    <div class="s-label rv" style="justify-content:center;">Get in Touch</div>
-    <h2 class="ct-title rv d1">Let&rsquo;s<br><em>connect</em></h2>
-    <p class="ct-sub rv d2">
-      For exhibition inquiries, commissions,<br>or simply to say hello.
-    </p>
-    <div class="ct-links rv d3">
-      <a href="mailto:yiruole@outlook.com" class="ct-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-        </svg>
-        <span>Email</span>
-      </a>
-      <a href="https://instagram.com/" target="_blank" rel="noopener" class="ct-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="2" y="2" width="20" height="20" rx="5"/>
-          <circle cx="12" cy="12" r="4"/>
-          <circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/>
-        </svg>
-        <span>Instagram</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ─── Footer ────────────────────────────────────────────────────── -->
 <footer>
-  <span class="ft-copy">&copy; 2026 Ruole Yi. All rights reserved.</span>
-  <span class="ft-tag">Oil Painting &nbsp;&middot;&nbsp; Digital Art &nbsp;&middot;&nbsp; Moving Image</span>
+  <span class="ft-left">&copy; 2026 Ruole Yi</span>
+  <div class="ft-right">
+    <a href="mailto:yiruole@outlook.com">Email</a>
+    <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+  </div>
 </footer>
 
-
 <script>
-/* ── Cursor ─────────────────────────────────────────────────────── */
-const dot  = document.getElementById('cdot');
-const ring = document.getElementById('cring');
-let mx=0, my=0, rx=0, ry=0;
-
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  dot.style.left = mx+'px'; dot.style.top = my+'px';
-});
-
-(function tick(){
-  rx += (mx-rx)*.11;
-  ry += (my-ry)*.11;
-  ring.style.left = rx+'px';
-  ring.style.top  = ry+'px';
-  requestAnimationFrame(tick);
-})();
-
-document.querySelectorAll('a,button,.gal-item,.vid-item,.ct-btn').forEach(el=>{
-  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
-  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
-});
-
-/* ── Navbar ─────────────────────────────────────────────────────── */
 const nav = document.getElementById('nav');
-window.addEventListener('scroll',()=>{
-  nav.classList.toggle('stuck', window.scrollY > 55);
-},{passive:true});
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('stuck', window.scrollY > 50);
+}, {passive:true});
 
-/* ── Hero title words ───────────────────────────────────────────── */
-document.querySelectorAll('.hero-h1 .wrd').forEach(w=>{
-  const d = parseInt(w.dataset.d)||0;
-  setTimeout(()=>w.classList.add('go'), 320+d);
-});
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
+}, {threshold:.08, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
 
-/* ── Scroll reveal ──────────────────────────────────────────────── */
-const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
-},{threshold:.08, rootMargin:'0px 0px -48px 0px'});
-document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
-
-/* ── Hamburger ──────────────────────────────────────────────────── */
 const burger = document.getElementById('burger');
-const mnav   = document.getElementById('mnav');
-
-burger.addEventListener('click',()=>{
+const mnav = document.getElementById('mnav');
+burger.addEventListener('click', () => {
   const open = burger.classList.toggle('open');
   mnav.classList.toggle('open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 });
-mnav.querySelectorAll('[data-close]').forEach(a=>{
-  a.addEventListener('click',()=>{
+mnav.querySelectorAll('[data-close]').forEach(a => {
+  a.addEventListener('click', () => {
     burger.classList.remove('open');
     mnav.classList.remove('open');
-    document.body.style.overflow='';
+    document.body.style.overflow = '';
   });
 });
-
-/* ── Lightbox ───────────────────────────────────────────────────── */
-const lb      = document.getElementById('lb');
-const lbImg   = document.getElementById('lbImg');
-const lbClose = document.getElementById('lbClose');
-
-document.querySelectorAll('.gal-item').forEach(item=>{
-  item.addEventListener('click',()=>{
-    lbImg.src = item.dataset.img;
-    lb.classList.add('on');
-    document.body.style.overflow='hidden';
-  });
-});
-
-function closeLb(){
-  lb.classList.remove('on');
-  document.body.style.overflow='';
-  setTimeout(()=>{ lbImg.src=''; },420);
-}
-lbClose.addEventListener('click', closeLb);
-lb.addEventListener('click', e=>{ if(e.target===lb) closeLb(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeLb(); });
 </script>
 </body>
 </html>
