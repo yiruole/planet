@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Large source video (264MB — too large for GitHub; host externally)
+TDMovieOutyinpin.8.mov
+
+# Original HEIC files (converted JPGs are tracked instead)
+*.heic
+*.HEIC
+
+# Misc
+SKILL.md
+数字艺术/000.mov
