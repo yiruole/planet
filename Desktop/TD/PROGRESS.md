@@ -14,98 +14,121 @@ TouchDesigner 2025 (31550) 音乐驱动魔方动效 + Claude Code HTTP 桥实时
 - HTTP 桥：`td_bridge_server.py` → TD Web Server DAT (端口 9980)
 - CLI：`td_claude.sh`
 
-### 魔方几何（当前状态）
-- **文件**：`NewProject.12.toe`（bridge 连接此文件）
-- **结构**：3个独立 Geo COMP，每层9个cubie，共27个
-
-```
-rubik_top (Geo COMP)          → 顶层 9个cubie，黄 #FFE500
-  box1(0.9) → copy1(←grid1 3x3 ty=+1, orient=zx) → rot1[display]
-  mat1: diff=(1.0,0.9,0.0) emit=(0.5,0.45,0.0)
-
-rubik_mid (Geo COMP)          → 中层 9个cubie，青 #00FFFF
-  box1(0.9) → copy1(←grid1 3x3 ty= 0, orient=zx) → rot1[display]
-  mat1: diff=(0.0,1.0,1.0) emit=(0.0,0.5,0.5)
-
-rubik_bot (Geo COMP)          → 底层 9个cubie，粉 #FF2D78
-  box1(0.9) → copy1(←grid1 3x3 ty=-1, orient=zx) → rot1[display]
-  mat1: diff=(1.0,0.18,0.47) emit=(0.5,0.09,0.24)
-```
-
-- rot1.ry.expr: `op("../lfo_top/mid/bot")["chan1"] * 180`（3层各自独立旋转）
-- torus1：已删除（TD 新建 Geo COMP 自动生成，每次必须立刻删）
+### 魔方几何（正常工作）
+- **文件**：`NewProject.14.toe`（bridge 连接此文件）
+- **结构**：单 rubik Geo COMP，内部：
+  ```
+  grid_bot/mid/top (orient=zx, rows=3, cols=3, ty=-1/0/+1)
+      → copy_bot/mid/top (← box1, size=0.9)
+      → color_bot/mid/top (Script SOP，目前有 Cd 属性问题)
+      → rot_bot/mid/top (ry = lfo 表达式)
+      → merge1 [display=True]
+  ```
+- **27个 cubie**（3层 × 9个），旋转正常
+- **相机公转**：tx/tz 使用 sin/cos 绕魔方旋转，lookat 始终对准 rubik
+- **音频驱动**：audiofilein1 → audio_env(envelopeCHOP) → audio_math(mathCHOP, gain=5)  
+  → cam.par.ty 和 cam.par.tz 随音量变化
 
 ### 渲染链
 ```
-rubik_render (geometry="rubik_top rubik_mid rubik_bot")
-    → rubik_bloom (maxRadius=0.08, preBlack=0.0)
-    → rubik_out
+rubik_render → rubik_bloom (maxRadius=0.05, preBlack=0.3) → rubik_out
 ```
 
-### 相机
-- tx=0, ty=2, tz=7, rx=-16, ry=0（从正前方略俯视）
-- **注意**：ry≠0 会导致相机偏离目标，渲染全黑
-
-### 其他节点
-- LFO：lfo_bot(0.08Hz) / lfo_mid(0.05Hz) / lfo_top(0.07Hz) / lfo_cam_x / lfo_cam_y
-- 灯光：rubik_key / rubik_fill
-- 旧单色 rubik Geo COMP：par.render=False（隐藏，保留备用）
+### 视频输出
+- `movie_out` (moviefileoutTOP)：mpeg4, MP4, 30fps, 30秒, 无音轨
+- 已录制一段（rubik_30s.mp4），但颜色方案未完成前录的
 
 ---
 
-## ⚠️ 未验证（明天第一件事）
+## 🔴 进行中：计划1 — 真实魔方6面配色
 
-- **3层颜色渲染未目视确认** — 相机/render geometry 刚修好，还没截图验证
-- 所有调参都通过 bridge 做的，今天结束前没有看到最终效果截图
+### 目标配色
+| 面 | 颜色 | Hex |
+|---|---|---|
+| 顶 +Y | 电光黄 | `#FFE500` |
+| 底 -Y | 热粉红 | `#FF2D78` |
+| 前 +Z | 霓虹青 | `#00FFFF` |
+| 后 -Z | 电橙 | `#FF6B35` |
+| 左 -X | 霓虹绿 | `#39FF14` |
+| 右 +X | 电蓝 | `#0080FF` |
+| 内面 | 近黑 | `#0A0A0A` |
+
+### 当前状态
+- **Script SOP 方案**：在 copy→rot 之间插入 color_bot/mid/top Script SOP，  
+  逻辑正确（用面重心坐标判断外表面）但 `addPointAttr('Cd',...)` 在 TD 2025 里无效，  
+  geometry 里没有 Cd 属性产生
+- **GLSL MAT 方案**：创建了 `rubik_glsl`，但 shader 编译报错  
+  核心发现：**TD 建 GLSL MAT 时自动生成 `rubik_glsl_vertex` 和 `rubik_glsl_pixel` Text DAT，  
+  应该编辑这两个，而不是自己创建的 rubik_vert/rubik_frag**
+
+### 明天第一步
+1. 查看 `rubik_glsl_vertex.text` 和 `rubik_glsl_pixel.text` 的默认内容和格式
+2. 在这两个 DAT 里写入颜色逻辑（用 P.xyz 判断面方向）
+3. 把 `rubik_glsl` 的 vdat/pdat 设为这两个默认 DAT
+4. 验证颜色显示正确
 
 ---
 
-## 📋 下一步计划
+## 📋 后续计划（颜色解决后）
 
-### 明天第一步：确认视觉效果
-1. 打开 `rubik_out` 确认3层颜色（黄/青/粉）正常显示
-2. 确认方块形状，不是圆环
-
-### 后续步骤
-3. **背景**：深黑 + 透视网格地面（霓虹线框）
-4. **灯光升级**：3点霓虹光（青色 key + 粉色 fill + 黄色 rim）
-5. **整体旋转**：给3个 Geo COMP 加 ry/rx 表达式（lfo_cam_y/x），让魔方整体缓慢漂移
-6. **后处理**：bloom 精调、色差 TOP、暗角
-7. **音频驱动**：audiofilein1 → beat 触发旋转加速
+1. 背景：深黑 + 透视网格地面（霓虹线框）
+2. 灯光升级：3点霓虹光（青色 key + 粉色 fill + 黄色 rim）
+3. 相机动画精调：更戏剧化的远近变化
+4. 后处理：bloom 精调、色差 TOP、暗角
+5. 音频驱动进阶：beat 触发旋转加速
+6. 录制最终 30 秒视频（含音频）
 
 ---
 
-## 🔴 今天踩坑备忘
+## 🔴 踩坑备忘（2026-06-04~05）
 
-| 坑 | 原因 | 教训 |
-|----|------|------|
-| 渲染全黑 | 相机 ry≠0，没对准立方体 | 相机 ry 必须=0（或明确对准目标） |
-| 渲染全黑 | Render TOP 的 geometry 填了完整路径 `/project1/rubik_mid` 而不是名字 `rubik_mid` | geometry 只填节点名，不要填完整路径 |
-| 渲染出圆环 | bloom maxRadius=1.0（全屏），任何形状都成圆 | maxRadius < 0.1 |
-| 新建 Geo COMP 有圆环 | TD 自动加 torus1.display=True | 建完立刻 destroy() |
-| Material SOP 不生效 | per-primitive 材质不被 3D Render 管线读取 | 每层独立 Geo COMP，直接挂 material |
-| gridSOP orient | 有效值：`xy`/`yz`/`zx`（不是 `xz`） | 水平层用 `zx` |
-| rows=2,cols=2 只有4个点 | rows/cols = 顶点数 | 9个cubie/层需要 rows=3,cols=3 |
+| 坑 | 教训 |
+|----|------|
+| bloom maxRadius=1.0 | 任何形状变圆，必须 < 0.1 |
+| 新建 Geo COMP 有 torus1.display=True | 建完立刻 destroy() |
+| TD gridSOP orient | 有效值：`zx`（水平），不是 `xz` |
+| rows=2,cols=2 只有4个点 | 9cubie/层需要 rows=3,cols=3 |
+| 相机 ry≠0 | 不对准立方体，渲染全黑 |
+| Script SOP addPointAttr('Cd',...) | 在 TD 2025 无效，Cd 属性不会被创建 |
+| Script SOP prim.points | td.Poly 对象用 prim.verts（但只在 SOP 上下文有效） |
+| GLSL MAT 自己建 DAT | 应用 TD 自动创建的 rubik_glsl_vertex/pixel |
+| audioenvelopeCHOP | 不能直接 create，用 envelopeCHOP + mathCHOP 代替 |
+| Render TOP geometry 填完整路径 | 只填节点名，不填路径 |
 
 ---
 
 ## 关键文件
+
 ```
 /Users/ruoleyi/Desktop/TD/
-├── NewProject.12.toe        # 当前主文件
-├── td_bridge_server.py      # HTTP 桥
-├── td_claude.sh             # CLI 工具
-├── PROGRESS.md              # 本文件
+├── NewProject.14.toe            # 当前主文件
+├── backup_before_plan1_20260605_0047.toe  # 计划1执行前备份
+├── rubik_30s.mp4                # 已录制视频（颜色未完成）
+├── td_bridge_server.py
+├── td_claude.sh
+├── PROGRESS.md                  # 本文件
 ├── chat-log-2026-06-03.md
 └── chat-log-2026-06-04.md
 ```
 
 ## TD API 备忘
+
 ```python
-sop.display = True           # 设 display flag（不是 par.display）
-geo.par.material = mat.path  # 材质挂到 Geo COMP
-grid.par.orient = "zx"       # 水平面（ZX Plane）
-geo.op("torus1").destroy()   # 新建 Geo COMP 后立刻删
-r.par.geometry = "name1 name2"  # Render TOP：只填名字，不填路径
-cam.par.ry = 0               # 相机默认朝 -Z，ry=0 才对准原点
+# Script SOP 内部可用（exec上下文不可用）
+prim.verts          # ✅ SOP上下文
+prim.points         # ❌ td.Poly没有这个属性
+
+# GLSL MAT
+mat.par.vdat = "rubik_glsl_vertex"   # 用TD自动生成的DAT
+mat.par.pdat = "rubik_glsl_pixel"    # 用TD自动生成的DAT
+# 不要自己建 DAT 给 GLSL MAT
+
+# 音频
+envelopeCHOP → mathCHOP(gain=5)     # 提取音量
+audioenvelopeCHOP                    # ❌ 不能直接 create
+
+# 相机公转
+cam.par.lookat = "/project1/rubik"   # 始终看着魔方
+cam.par.tx.expr = "math.sin(absTime.seconds*0.25)*6"
+cam.par.tz.expr = "math.cos(absTime.seconds*0.25)*6 - op('audio_math')[0]*2"
 ```
