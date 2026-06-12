@@ -219,23 +219,36 @@ void main(){
     uv.y = -uv.y;
     uv.x *= 16.0/9.0;
 
-    vec3 ro = vec3(0.5, -0.7, -4.8);
-    vec3 tg = vec3(0.0,  1.8,  1.5);
+    // Orbiting camera — rotates around CLK_C in XZ plane
+    // uTime accumulates faster with loud music, so orbit speeds up with the beat
+    float camAngle = uTime * 0.14 + uBeat * 0.006;
+    float camDist  = 6.9;
+    float camH     = -2.65; // height offset below CLK_C
+    vec3 ro = CLK_C + vec3(sin(camAngle)*camDist, camH, cos(camAngle)*camDist);
+    vec3 tg = CLK_C + vec3(0.0, 0.2, 0.0); // look slightly above clock center
+
     vec3 fw = normalize(tg - ro);
     vec3 rt = normalize(cross(fw, vec3(0,1,0)));
     vec3 up3= cross(rt, fw);
-    vec3 rd = normalize(fw + uv.x*rt*0.70 + uv.y*up3*0.70);
+    vec3 rd = normalize(fw + uv.x*rt*0.72 + uv.y*up3*0.72);
 
-    // Sky
+    // Sky — richer atmospheric gradient
     float sk = clamp(rd.y, 0., 1.);
-    vec3 sky = mix(vec3(0.22,0.44,0.82), vec3(0.01,0.02,0.25), sk*sk*sk);
-    sky = mix(vec3(0.46,0.56,0.72), sky, smoothstep(-0.04,0.22,rd.y));
+    vec3 sky = mix(vec3(0.18,0.38,0.78), vec3(0.00,0.01,0.18), sk*sk*sk);
+    sky = mix(vec3(0.52,0.62,0.80), sky, smoothstep(-0.06,0.28,rd.y));
     float sunD = max(0., dot(rd,SUN));
-    sky += pow(sunD,350.)*vec3(1.9,1.6,0.9) + pow(sunD,10.)*vec3(0.22,0.16,0.02)*.28;
+    // Sun disk + wide corona + horizon glow
+    sky += pow(sunD,500.)*vec3(2.5,2.2,1.6)
+         + pow(sunD, 18.)*vec3(0.38,0.24,0.05)*0.55
+         + pow(sunD,  4.)*vec3(0.10,0.07,0.01)*0.20;
+    // Horizon warm band
+    float horiz = exp(-abs(rd.y)*4.5);
+    sky += vec3(0.32,0.18,0.04)*horiz*0.35;
 
-    float cosA=dot(rd,SUN), g1=.80, g2=-.12;
-    float ph = .60*(1.-g1*g1)/pow(1.+g1*g1-2.*g1*cosA,1.5)/12.566
-             + .40*(1.-g2*g2)/pow(1.+g2*g2-2.*g2*cosA,1.5)/12.566;
+    // Mie phase — boosted forward lobe for silver-lining on clouds
+    float cosA=dot(rd,SUN), g1=.84, g2=-.10;
+    float ph = .75*(1.-g1*g1)/pow(1.+g1*g1-2.*g1*cosA,1.5)/12.566
+             + .25*(1.-g2*g2)/pow(1.+g2*g2-2.*g2*cosA,1.5)/12.566;
 
     // ── Clock plane intersection ──────────────────────────────────────
     float t_clock  = -1.0;
@@ -264,11 +277,15 @@ void main(){
             float alpha  = 1.-exp(-d*DT*3.5);
             float lit    = shadowMarch(p);
             float powder = 1.-exp(-d*DT*7.0);
-            float ms     = .22*exp(-d*DT*3.);
+            float ms     = .28*exp(-d*DT*2.8);
             float hgt    = clamp((p.y+0.1)/3.5,0.,1.);
-            vec3 sunC = vec3(1.05,1.01,.97)*lit*(ph*7.+.08)*powder;
-            vec3 amb  = mix(vec3(.05,.09,.36),vec3(.60,.70,.96),hgt*hgt)*.60;
-            cCol += tr*alpha*(sunC+amb+vec3(.50,.60,.82)*ms);
+            // Stronger sun + silver-lining from boosted Mie
+            vec3 sunC = vec3(1.12,1.07,1.00)*lit*(ph*11.+0.06)*powder;
+            // Warm sunlit tops, cool blue shadowed bottoms
+            vec3 amb  = mix(vec3(.03,.07,.32),vec3(.68,.76,1.00),hgt*hgt)*.55;
+            // Rim scatter: bright silver edge when cloud is near sun direction
+            vec3 rimS = vec3(1.0,1.0,1.0)*ph*lit*0.45*(1.-lit*0.7);
+            cCol += tr*alpha*(sunC+amb+vec3(.45,.56,.82)*ms+rimS);
             tr   *= (1.-alpha);
         }
         t += DT;
