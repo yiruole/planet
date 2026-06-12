@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oil Painting — Ruole Yi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:opsz,wght@9..40,200;9..40,300;9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Painting entries ───────────────────────────── */
+    .painting {
+      padding:88px 64px;
+      border-bottom:1px solid var(--faint);
+      position:relative; overflow:hidden;
+    }
+    .painting:last-of-type { border-bottom:none; }
+
+    .p-ghost {
+      position:absolute;
+      font-family:var(--font-d);
+      font-size:clamp(10rem,20vw,18rem);
+      font-weight:300; line-height:1;
+      color:rgba(0,0,0,.025);
+      user-select:none; pointer-events:none;
+      letter-spacing:-.04em;
+      top:20px; right:40px; z-index:0;
+    }
+
+    /* Layout A — centered */
+    .p-a .p-img-wrap {
+      max-width:559px; margin:0 auto;
+      position:relative; z-index:1;
+    }
+    .p-a .p-info {
+      max-width:559px; margin:52px auto 0;
+      text-align:center; position:relative; z-index:1;
+    }
+
+    /* Layout B — image left */
+    .p-b .p-inner {
+      display:grid;
+      grid-template-columns:58fr 38fr;
+      gap:47px; align-items:center;
+      max-width:832px; margin:0 auto;
+      position:relative; z-index:1;
+    }
+
+    /* Layout C — image right */
+    .p-c .p-inner {
+      display:grid;
+      grid-template-columns:38fr 58fr;
+      gap:47px; align-items:center;
+      max-width:832px; margin:0 auto;
+      position:relative; z-index:1;
+    }
+    .p-c .p-img-wrap { grid-column:2; grid-row:1; }
+    .p-c .p-info { grid-column:1; grid-row:1; }
+
+    /* Text elements */
+    .p-num {
+      font-size:.6rem; letter-spacing:.3em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:16px;
+    }
+    .p-title {
+      font-family:var(--font-d);
+      font-size:clamp(1.8rem,3.5vw,3rem);
+      font-weight:300; line-height:1.05;
+      letter-spacing:-.015em; margin-bottom:12px;
+    }
+    .p-medium {
+      font-size:.65rem; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--muted); margin-bottom:24px;
+    }
+    .p-desc {
+      font-size:.9rem; color:#555; line-height:1.95;
+    }
+
+    /* Image click */
+    .p-img-wrap { cursor:zoom-in; }
+    .p-img-wrap img {
+      display:block; width:100%; transition:opacity .35s;
+    }
+    .p-img-wrap:hover img { opacity:.88; }
+
+    /* Lightbox */
+    .lb {
+      position:fixed; inset:0;
+      background:rgba(255,255,255,.97); z-index:9999;
+      display:flex; align-items:center; justify-content:center;
+      padding:60px; opacity:0; pointer-events:none;
+      transition:opacity .35s;
+    }
+    .lb.on { opacity:1; pointer-events:all; }
+    .lb-img {
+      max-width:100%; max-height:100%;
+      object-fit:contain;
+      transform:scale(.96);
+      transition:transform .45s var(--ease-expo);
+    }
+    .lb.on .lb-img { transform:scale(1); }
+    .lb-close {
+      position:absolute; top:28px; right:48px;
+      background:none; border:none; cursor:pointer;
+      font-size:.66rem; letter-spacing:.2em;
+      text-transform:uppercase; color:var(--muted);
+      display:flex; align-items:center; gap:8px; transition:color .3s;
+    }
+    .lb-close:hover { color:var(--text); }
+    .lb-close svg { width:16px; height:16px; }
+
+    @media (max-width:960px) {
+      .painting { padding:64px 24px; }
+      .p-ghost { font-size:clamp(6rem,18vw,10rem); }
+      .p-b .p-inner,
+      .p-c .p-inner { grid-template-columns:1fr; gap:36px; }
+      .p-c .p-img-wrap { grid-column:1; grid-row:2; }
+      .p-c .p-info { grid-column:1; grid-row:1; }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="index.html" class="nav-logo">Ruole Yi</a>
+  <ul class="nav-links">
+    <li><a href="oil-painting.html" class="active">Oil Painting</a></li>
+    <li><a href="digital-art.html">Digital Art</a></li>
+    <li><a href="experimental-film.html">Experimental Film</a></li>
+    <li><a href="photography.html">Photography</a></li>
+    <li><a href="music.html">Music</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="m-nav" id="mnav">
+  <a href="oil-painting.html" data-close>Oil Painting</a>
+  <a href="digital-art.html" data-close>Digital Art</a>
+  <a href="experimental-film.html" data-close>Experimental Film</a>
+  <a href="photography.html" data-close>Photography</a>
+  <a href="music.html" data-close>Music</a>
+</div>
+
+<div class="lb" id="lb">
+  <button class="lb-close" id="lbClose">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="2" y1="2" x2="18" y2="18"/><line x1="18" y1="2" x2="2" y2="18"/>
+    </svg>
+    Close
+  </button>
+  <img class="lb-img" id="lbImg" src="" alt="">
+</div>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <span class="pg-sup rv">Work 01</span>
+    <h1 class="pg-title rv d1">Oil<br>Painting</h1>
+    <span class="pg-sub rv d2">17 works</span>
+  </div>
+</div>
+
+<!-- 01 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">01</span>
+  <div class="p-img-wrap">
+    <img src="油画/0.jpg" alt="The Bonds of Id" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">01 / 17</div>
+    <h2 class="p-title">The Bonds of Id</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 40 × 60 cm &nbsp;·&nbsp; 2025</div>
+    <p class="p-desc">The painting stages a contest between Id, Ego, and Superego. The sinuous blue-green torso at the center embodies the Id in its raw, irrational force—severed from its rational head, extending as pure instinct into darkness. The grey-white classical stone sculptures on either side stand for the rigid, repressive Superego and the reality-bound Ego. Fluorescent-pink bonds act as a Freudian repression mechanism, forcibly suturing instinct to civilized order, generating an agonized tearing sensation in the dark depths of the unconscious. Above, a red sun is consumed by unconscious darkness—the daylight of reason fading—as the ego undergoes its painful, inevitable alchemical transformation.</p>
+  </div>
+</article>
+
+<!-- 02 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">02</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/1.jpg" alt="Mirror — Balance" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">02 / 17</div>
+      <h2 class="p-title">Mirror — Balance</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 40 × 60 cm &nbsp;·&nbsp; Nov. 2025</div>
+      <p class="p-desc">The water's surface and the bubbles at the chest form a dual mirror. Drawing on Lacan's Mirror Stage, the deep eye in the foreground and the blurred reflection beneath the water surface capture the subject's attempt—in the undifferentiated pre-linguistic stage—to confirm its own wholeness through an external image. Yet the mirrored self is always a fiction, a misrecognition: like the disembodied white hand rising from the void to cradle the face, a symbol of the Other that simultaneously constructs and disciplines the "I."<br><br>The work introduces the physical equilibrium between water and vapor. Water is the sunken, fluid unconscious; the rising bubbles and crystal spheres are the condensed, sublimated gaze of consciousness. Within this closed psychic field, evaporation and condensation achieve dynamic balance: the Id's unconscious desire ceaselessly probes outward, becoming alienated as rational self-identity, while self-reflection constantly precipitates back into the depths of the unconscious sea.</p>
+    </div>
+  </div>
+</article>
+
+<!-- 03 — Layout C -->
+<article class="painting p-c rv">
+  <span class="p-ghost" aria-hidden="true">03</span>
+  <div class="p-inner">
+    <div class="p-info">
+      <div class="p-num">03 / 17</div>
+      <h2 class="p-title">The Non-Existent Atom</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 70 cm &nbsp;·&nbsp; Nov. 2025</div>
+      <p class="p-desc">In this work, I attempt to approach existence itself from the side that has been declared "non-existent"—to explore the outermost boundary of scientific discourse from within its own terms.<br><br>For me, "non-existence" does not mean something is absent from the world. It means something has been deleted from the range of what a given theory or language permits to be named.<br><br>This work is a small attempt to sketch at that blind spot.</p>
+    </div>
+    <div class="p-img-wrap">
+      <img src="油画/2.jpg" alt="The Non-Existent Atom" loading="lazy">
+    </div>
+  </div>
+</article>
+
+<!-- 04 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">04</span>
+  <div class="p-img-wrap">
+    <img src="油画/3.jpg" alt="Mental Breakdown Caused by Uncertainty" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">04 / 17</div>
+    <h2 class="p-title">Mental Breakdown Caused by Uncertainty</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 90 cm &nbsp;·&nbsp; Nov. 2025</div>
+    <p class="p-desc">This work places quantum physics and psychoanalysis in direct confrontation. Wave-particle duality and the uncertainty principle reveal that reality is fundamentally unstable—it cannot be fully verified or fixed in place. Likewise, the human subject is produced through a fragile suture between the Imaginary and the Symbolic: on one side, how we see ourselves; on the other, how language, culture, and social order name and assign us. This construction makes identity possible while always carrying within it the possibility of its own collapse. Brain fog is a collective symptom.</p>
+  </div>
+</article>
+
+<!-- 05 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">05</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/4.jpg" alt="Anxiety Cured My Existential Emptiness" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">05 / 17</div>
+      <h2 class="p-title">Anxiety Cured My Existential Emptiness</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 90 cm &nbsp;·&nbsp; Dec. 2025</div>
+      <p class="p-desc">Using ironic visual rhetoric, this painting depicts a psyche willing to drink poison to quench its thirst—anything to escape the existential void. Existential emptiness is the vacuum the subject falls into when faced with the absence of the Other. To combat a nothingness more terrifying than death, the subject forces its way through chaotic sensory experience via symbolic nodes, suturing fragmented appearances into a precariously balanced self. The Tangut character in the upper right corner stands for the incompleteness and inherent meaninglessness of all symbolic systems.</p>
+    </div>
+  </div>
+</article>
+
+<!-- 06 — Layout C -->
+<article class="painting p-c rv">
+  <span class="p-ghost" aria-hidden="true">06</span>
+  <div class="p-inner">
+    <div class="p-info">
+      <div class="p-num">06 / 17</div>
+      <h2 class="p-title">Structure Exceeds Appearance</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 80 × 100 cm &nbsp;·&nbsp; Dec. 2025</div>
+      <p class="p-desc">This painting carries the feel of an experimental manuscript, a notebook of the psyche. It renders visually how the Symbolic Order disciplines and anchors the Imaginary. Psychological reality is determined not by surface appearances but by the invisible underlying structures of language, symbol, and the unconscious.<br><br>At the base of the canvas, heavy, struggling colors and half-glimpsed human faces represent raw, untamed libidinal drives. But what governs the entire composition is an unconscious coordinate grid built from rational terms—reconstruction, spatial power, performativity, instability—and radiating lines. The core at the center, locked down by red and black lines, is the Lacanian point de capiton: the anchoring node through which structure forcibly pierces chaotic sensory experience, suturing fragmented appearances into a precariously balanced subject. The Tangut character in the upper right corner stands for the incompleteness and inherent meaninglessness of all symbolic systems.</p>
+    </div>
+    <div class="p-img-wrap">
+      <img src="油画/5.jpg" alt="Structure Exceeds Appearance" loading="lazy">
+    </div>
+  </div>
+</article>
+
+<!-- 07 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">07</span>
+  <div class="p-img-wrap">
+    <img src="油画/6.jpg" alt="Threshold: The Residual Darkness at the Edge of Jouissance" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">07 / 17</div>
+    <h2 class="p-title">Threshold: The Residual Darkness<br>at the Edge of Jouissance</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 80 × 100 cm &nbsp;·&nbsp; Dec. 2025</div>
+    <p class="p-desc">This painting attempts to visualize Lacan's dialectic of jouissance and plus-de-jouir—surplus enjoyment. The "edge of ecstasy" in the title refers to a limit experience that exceeds the pleasure principle and approaches the boundary of pain. On the right, a female figure enveloped in blazing pink and blood-red clouds embodies a subject in the grip of total ecstatic experience, body and spirit fully ignited. Her face is distorted by light; her eyes receded into sealed voids—consciousness drowning in jouissance, reason retreating. Yet the ecstasy can never be pure. On the left, a cold blue undercurrent; on the water's surface, a solitary eye gazes without expression. The unnamed thing. A chrysalis waiting to rupture.</p>
+  </div>
+</article>
+
+<!-- 08 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">08</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/7.jpg" alt="Untitled" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">08 / 17</div>
+      <h2 class="p-title">Untitled</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 60 × 60 cm &nbsp;·&nbsp; Dec. 2025</div>
+    </div>
+  </div>
+</article>
+
+<!-- 09 — Layout C -->
+<article class="painting p-c rv">
+  <span class="p-ghost" aria-hidden="true">09</span>
+  <div class="p-inner">
+    <div class="p-info">
+      <div class="p-num">09 / 17</div>
+      <h2 class="p-title">Untitled</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 70 cm &nbsp;·&nbsp; Dec. 2025</div>
+      <p class="p-desc">If the spectral white horse in the earlier work embodies the ideal phantom that the subject endlessly pursues in the unconscious depths—intangible, forever out of reach—then this painting shows the rational Ego picking up a circular lens, forcibly freezing a moment in the chaotic flux of space and time, enlarging and piercing through the horse's gaze. What the eye perceives through a lens is rarely the unfiltered truth.</p>
+    </div>
+    <div class="p-img-wrap">
+      <img src="油画/8.jpg" alt="Untitled" loading="lazy">
+    </div>
+  </div>
+</article>
+
+<!-- 10 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">10</span>
+  <div class="p-img-wrap">
+    <img src="油画/9.jpg" alt="Untitled" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">10 / 17</div>
+    <h2 class="p-title">Untitled</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 100 × 100 cm &nbsp;·&nbsp; Jan. 2026</div>
+    <p class="p-desc">When the mind empties itself completely, the physical world dissolves before the eyes.</p>
+  </div>
+</article>
+
+<!-- 11 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">11</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/10.jpg" alt="Untitled" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">11 / 17</div>
+      <h2 class="p-title">Untitled</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 70 cm &nbsp;·&nbsp; Feb. 2026</div>
+      <p class="p-desc">This painting had no blueprint, no plan made in advance. It was painted entirely by following the feeling of the moment. While working, the rational mind was set aside — I relied purely on intuition and bodily instinct, adding and subtracting on the canvas. In the end, a rough crack rose naturally at the center. It resists easy definition, yet it is visually arresting: at once like a fracture splitting open in hard mineral rock, like a galaxy igniting across a night sky, and like the primal cleft of a womb from which life emerges. It represents no lofty theory. In that moment, whatever felt most right to paint is simply what it became.</p>
+    </div>
+  </div>
+</article>
+
+<!-- 12 — Layout C -->
+<article class="painting p-c rv">
+  <span class="p-ghost" aria-hidden="true">12</span>
+  <div class="p-inner">
+    <div class="p-info">
+      <div class="p-num">12 / 17</div>
+      <h2 class="p-title">Untitled</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; Feb. 2026</div>
+    </div>
+    <div class="p-img-wrap">
+      <img src="油画/11.jpg" alt="Untitled" loading="lazy">
+    </div>
+  </div>
+</article>
+
+<!-- 13 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">13</span>
+  <div class="p-img-wrap">
+    <img src="油画/12.jpg" alt="Untitled" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">13 / 17</div>
+    <h2 class="p-title">Solar Sphere</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 80 × 80 cm &nbsp;·&nbsp; Mar. 2026</div>
+    <p class="p-desc">The ocean has always been what I love most — it gives me a sense of eternity that is painless and unhurried. The irregular, burning luminous mass at the center is like a cocoon waiting to rupture — something without a name.</p>
+  </div>
+</article>
+
+<!-- 14 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">14</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/13.jpg" alt="Overhead" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">14 / 17</div>
+      <h2 class="p-title">Overhead</h2>
+      <div class="p-medium">Transparent oil on canvas &nbsp;·&nbsp; 60 × 60 cm &nbsp;·&nbsp; Mar. 2026</div>
+      <p class="p-desc">The earth appears here as a transparent vessel filled with water. All the world's oceans flow out through an elongated ellipse—the transparent canvas conveying the translucency of both water and container. The upper half of the composition shows the earth's surface once the water has receded. The lower half holds the ocean itself, now poured free.</p>
+    </div>
+  </div>
+</article>
+
+<!-- 15 — Layout C -->
+<article class="painting p-c rv">
+  <span class="p-ghost" aria-hidden="true">15</span>
+  <div class="p-inner">
+    <div class="p-info">
+      <div class="p-num">15 / 17</div>
+      <h2 class="p-title">The Summit</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 70 × 70 cm &nbsp;·&nbsp; Apr. 2026</div>
+      <p class="p-desc">Abandoning perfectionism and fear, I finally put brush to canvas. Layers of paint applied, wiped away, reconsidered. Ideas arrived mid-stroke. This painting was made while listening to Heidegger's reflections on death.</p>
+    </div>
+    <div class="p-img-wrap">
+      <img src="油画/14.jpg" alt="The Summit" loading="lazy">
+    </div>
+  </div>
+</article>
+
+<!-- 16 — Layout A -->
+<article class="painting p-a rv">
+  <span class="p-ghost" aria-hidden="true">16</span>
+  <div class="p-img-wrap">
+    <img src="油画/15.jpg" alt="Untitled" loading="lazy">
+  </div>
+  <div class="p-info">
+    <div class="p-num">16 / 17</div>
+    <h2 class="p-title">Untitled</h2>
+    <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 25 × 25 cm &nbsp;·&nbsp; Apr. 2026</div>
+    <p class="p-desc">The figure on the left represents the disciplined rational mind. The elephant on the right is untamed wildness transgressing every boundary. Between them, a red core: the sun—too bright to look at directly, mercilessly consuming time. A wandering through the infinite universe and the dimension of time.</p>
+  </div>
+</article>
+
+<!-- 17 — Layout B -->
+<article class="painting p-b rv">
+  <span class="p-ghost" aria-hidden="true">17</span>
+  <div class="p-inner">
+    <div class="p-img-wrap">
+      <img src="油画/00.jpg" alt="The Room of the Split Subject" loading="lazy">
+    </div>
+    <div class="p-info">
+      <div class="p-num">17 / 17</div>
+      <h2 class="p-title">The Room of the Split Subject</h2>
+      <div class="p-medium">Oil on canvas &nbsp;·&nbsp; 50 × 70 cm &nbsp;·&nbsp; 2025</div>
+      <p class="p-desc">This picture constructs a classic psychic enclosure. The enormous hollow mask in the foreground—all surface, no substance—stands for the false self assembled within social order. On the wall, the symbol ∅ appears unmistakably: the Lacanian barred subject, the self that has been crossed out. This work is a small attempt to sketch at that blind spot.</p>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <span class="ft-left">&copy; 2026 Ruole Yi</span>
+  <div class="ft-right">
+    <a href="mailto:yiruole@outlook.com">Email</a>
+    <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('stuck', window.scrollY > 50);
+}, {passive:true});
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('on'); });
+}, {threshold:.06, rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+const burger = document.getElementById('burger');
+const mnav = document.getElementById('mnav');
+burger.addEventListener('click', () => {
+  const open = burger.classList.toggle('open');
+  mnav.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+mnav.querySelectorAll('[data-close]').forEach(a => {
+  a.addEventListener('click', () => {
+    burger.classList.remove('open');
+    mnav.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+const lb = document.getElementById('lb');
+const lbImg = document.getElementById('lbImg');
+const lbClose = document.getElementById('lbClose');
+
+document.querySelectorAll('.p-img-wrap').forEach(wrap => {
+  wrap.addEventListener('click', () => {
+    lbImg.src = wrap.querySelector('img').src;
+    lb.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+function closeLb() {
+  lb.classList.remove('on');
+  document.body.style.overflow = '';
+  setTimeout(() => { lbImg.src = ''; }, 380);
+}
+lbClose.addEventListener('click', closeLb);
+lb.addEventListener('click', e => { if(e.target === lb) closeLb(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLb(); });
+</script>
+</body>
+</html>
