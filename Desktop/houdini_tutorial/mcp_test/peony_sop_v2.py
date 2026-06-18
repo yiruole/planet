@@ -52,7 +52,8 @@ def petal_pts(scale, layer_idx, petal_idx, total_petals, seed_base):
     ruffle_ph   = rng.uniform(0, math.pi * 2)
     vein_count  = rng.randint(7, 13)
     # Veins much deeper — visible as geometry ridges in render
-    vein_depth  = rng.uniform(0.018, 0.035) * scale
+    # Deep enough to survive 1 iteration of Catmull-Clark subdivision
+    vein_depth  = rng.uniform(0.055, 0.090) * scale
     tip_twist   = rng.uniform(-0.08, 0.08) * scale
 
     for iu in range(RU + 1):
