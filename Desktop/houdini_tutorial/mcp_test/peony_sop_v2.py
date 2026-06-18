@@ -118,14 +118,14 @@ def petal_pts(scale, layer_idx, petal_idx, total_petals, seed_base):
 geo.addAttrib(hou.attribType.Point, "Cd", (1.0, 1.0, 1.0))
 geo.addAttrib(hou.attribType.Point, "layer", 0)
 
-# Layers: more petals, more variation
-# (num_petals, base_radius, petal_scale, color_lf)
+# Layers: tighter radii so petals overlap like shingles, not spaced rings
+# (num_petals, base_radius, petal_scale)
 layers = [
-    (6,  0.00, 0.10),   # bud core — tightly closed small petals
-    (8,  0.07, 0.15),   # inner ring
-    (11, 0.15, 0.21),   # mid-inner
-    (13, 0.24, 0.27),   # mid-outer
-    (10, 0.33, 0.34),   # outer ring — large open petals
+    (6,  0.00, 0.11),   # bud core
+    (8,  0.04, 0.16),   # inner ring
+    (11, 0.08, 0.22),   # mid-inner
+    (13, 0.13, 0.28),   # mid-outer
+    (10, 0.18, 0.35),   # outer ring
 ]
 NL = len(layers)
 random.seed(7)
@@ -142,8 +142,8 @@ for li, (np_count, radius, ps) in enumerate(layers):
     # Radius: petals spread outward AND droop as they open
     anim_radius = radius * (0.20 + 0.80 * pb)
 
-    # Tilt: outer petals droop more
-    max_tilt = 15.0 + lf * 88.0
+    # Tilt: outer petals droop more, but max ~68° so they never lie flat
+    max_tilt = 8.0 + lf * 60.0
     tilt = pb * max_tilt
     cos_t = math.cos(math.radians(tilt))
     sin_t = math.sin(math.radians(tilt))
@@ -168,7 +168,7 @@ for li, (np_count, radius, ps) in enumerate(layers):
         petal_delay_jitter = random.uniform(-0.06, 0.06)   # timing offset
         petal_tilt_jitter  = random.uniform(-8.0, 8.0)     # ±8° tilt variation
         petal_radius_jitter = random.uniform(0.88, 1.12)   # radius spread ±12%
-        petal_height_jitter = random.uniform(-0.02, 0.02)  # vertical offset
+        petal_height_jitter = random.uniform(-0.008, 0.008)  # subtle vertical offset
 
         p_layer_raw = max(0.0, min(1.0, layer_raw + petal_delay_jitter))
         pb_petal = bloom_ease(p_layer_raw)
