@@ -1,0 +1,47 @@
+{
+  "source": "https://www.xiaohongshu.com/explore/6a448b1f000000002103d964 (ref.mp4)",
+  "media": {"duration": 41.82, "fps": 30, "resolution": "720x1280", "audio": true, "cuts": 0},
+  "blind_protocol": "本文件在读取页面文案之前完成并锁定;页面说明仅用于事后 blind-check",
+  "observed": [
+    {"fact": "全片为上下分屏 breakdown:上半=效果,下半=节点编辑器,单镜头无剪切", "evidence": "contact_sheet 全部25格 + shots.json n_cuts=0"},
+    {"fact": "节点编辑器是 TouchDesigner:可读节点名 noise1-7/math1-7(CHOP,绿色,显示chan1数值)、switch1-6/comp1/multiply2/lumalevel3/blur1/fit2/transform1(TOP带缩略图)、LENS_DIRT/GRAIN/HSV_ADJUST", "evidence": "f_16.7.jpg, f_33.5.jpg 全分辨率帧"},
+    {"fact": "网络框标题(视频画面内文字):'Audio analysis'、'Multiply layer opacity by (audio…)'、'Blender render layers'", "evidence": "f_6.7.jpg"},
+    {"fact": "'Blender render layers' 框内是成组 file-in TOP,缩略图为同一房间的不同灯光状态", "evidence": "f_6.7.jpg 下半部网格"},
+    {"fact": "效果场景:静止机位,backrooms 风格办公室,中央家具废墟堆;各状态间几何/构图逐像素一致,仅光照变化(暗+堆内实用灯泡 / 顶部柔光 / 荧光灯阵全亮)", "evidence": "f_3.4 vs f_16.7 vs f_33.5 同位置对比"},
+    {"fact": "声画同步:上半画面逐帧亮度与音频RMS包络相关性0.51,最佳滞后≤3帧;闪烁事件从~12.2s开始,亮度分布双峰(暗底875帧+亮态散布)", "evidence": "luma_top.csv × rms.txt 相关性计算"},
+    {"fact": "TD 内后期链:LENS_DIRT→GRAIN→HSV_ADJUST(+blur/lumalevel),与画面颗粒/暗角观感一致", "evidence": "f_33.5.jpg"}
+  ],
+  "inferred": [
+    {"claim": "底板在 Blender 渲染为按光源拆分的 render layers(light-mixing/加法重打光),TD 内实时混合", "basis": "网络框标题'Blender render layers'+各状态几何零位移+'Multiply layer opacity'", "confidence": "high"},
+    {"claim": "音频分析(audiofilein→分频/包络)经 math CHOP 映射到各光层不透明度;noise CHOP 提供随机闪烁分量;switch TOP 做状态选择", "basis": "Audio analysis框+noise→math→switch→comp/multiply拓扑", "confidence": "high"},
+    {"claim": "底板是静帧(非序列):机位静止、各switch缩略图无运动痕迹", "basis": "缩略图+上半画面除光照外无运动", "confidence": "medium"},
+    {"claim": "场景为3D渲染而非实拍(与'Blender render layers'一致;光照状态完美对齐实拍难做到)", "basis": "标题+状态对齐", "confidence": "high"}
+  ],
+  "unknown": [
+    "Blender 场景/家具堆的制作方式(建模/扫描/AI辅助)",
+    "音频特征映射细节(频段划分、beat检测还是RMS)与光层确切数量",
+    "声音素材来源与是否先有声后有画",
+    "页面文案是否披露更多工作流细节(待blind-check)"
+  ],
+  "pipelines": [
+    {"route": "A(证据指向): Blender 渲染按光源拆分的静帧层 → TD: audio analysis + noise CHOP 驱动各层 opacity 混合 → TD 后期(lens dirt/grain/HSV)", "tools": ["blender", "touchdesigner"], "pros": ["与全部OBSERVED吻合", "实时可调", "底板一次渲染反复用"], "cons": ["跨两个软件", "route_to_skill 单值字段表达不了混合管线"], "est_effort": "中:Blender底板2-4层+TD网络+输出"},
+    {"route": "B: 纯 TD 内3D场景+实时灯光", "tools": ["touchdesigner"], "pros": ["单软件"], "cons": ["与'Blender render layers'框直接矛盾", "TD内做该画质GI不现实"], "est_effort": "高"},
+    {"route": "C: 离线合成(AE/Nuke)做层混合", "tools": ["ae"], "pros": ["也能出同款"], "cons": ["与视频中TD节点图矛盾", "AE无自动化通道"], "est_effort": "中"}
+  ],
+  "recommended": {"route": "A", "reason": "OBSERVED 三条直接证据(TD节点图、Blender render layers框、audio-opacity标题)全部指向混合管线;机制核心在TD侧(audio→layer opacity),Blender只产静帧底板"},
+  "mvp": {
+    "goal": "复现机制:同机位多光照状态静帧,在TD内由音频+噪声驱动各层不透明度实时混合出光闪节奏,含TD后期链,输出~20s成片",
+    "steps": [
+      "Blender:简化房间(顶灯阵+中央杂物堆代理+堆内实用灯),同机位渲染4个光照层:暗底/实用灯泡/顶部柔光/荧光全亮",
+      "TD:moviefilein×4 → audiofilein(参考片音轨)→ analyze/lag 分频 → math 映射 + noise CHOP 随机分量 → 各层 level/multiply → comp",
+      "TD后期:lens dirt(可用noise代理)→ grain → HSV → 输出 moviefileout",
+      "fidelity:crop参考上半为目标,compare_fidelity.py 视频模式对比"
+    ],
+    "success_criteria": {
+      "mechanism_gate": "①各层几何逐像素对齐仅光照不同 ②输出亮度包络与驱动音频RMS相关性≥0.4且滞后≤3帧 ③关灯基态与开灯爆发双峰亮度分布可辨识",
+      "fidelity_gate": "compare_fidelity.py:时序亮度曲线形态(暗底+突发尖峰,事件密度同量级)、暗态亮度水平差<2x、亮态画面直方图/边缘密度与参考同向;每轮最多3差距,来源分类A-I记录"
+    }
+  },
+  "route_to_skill": "touchdesigner-effect-builder",
+  "route_note": "实际为混合管线:blender-effect-builder(底板)→ touchdesigner-effect-builder(机制核心+后期)。route_to_skill 单值字段无法表达,按机制核心归TD。"
+}

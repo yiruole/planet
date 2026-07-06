@@ -71,8 +71,9 @@ Markdown 报告 + 同目录 `analysis.json`:
   "recommended": {"route": "", "reason": ""},
   "mvp": {"goal": "", "steps": [""],
           "success_criteria": {"mechanism_gate": "机制可辨识对应的判据",
-                               "fidelity_gate": "保真维度判据(必填,见 creative-rules/fidelity-rules.md;机制达标≠完成)"}},
-  "route_to_skill": "houdini-effect-builder|blender-effect-builder|touchdesigner-effect-builder|footage-transform-lab|none"
+                               "fidelity_gate": "保真维度判据(必填,见 creative-rules/fidelity-rules.md;机制达标≠完成)",
+                               "stage_gates": {"<阶段名>": "hybrid 管线必填:每个阶段(底板/机制/后期…)自己的独立保真判据"}}},
+  "route_to_skill": ["按执行顺序列出全部阶段的有序数组,如 [\"blender-effect-builder\", \"touchdesigner-effect-builder\"];单软件效果就是单元素数组;none 用 []"]
 }
 ```
 
@@ -87,7 +88,12 @@ Markdown 报告 + 同目录 `analysis.json`:
 
 **不要因为某软件已装就强行用它。** 判断依据是效果的技术本质。
 
+**hybrid 管线是一等公民**:很多真实工作流跨软件(如 Blender 渲光层底板 → TD 音频驱动混合)。`route_to_skill` 是有序数组,禁止把多阶段管线塞进单值再靠备注找补——schema 表达不了的东西,后面的验收就不会为它立判据(backrooms 案例实证)。
+
+**非核心侧不许降级**:判定"机制核心"归属某软件后,其余阶段(底板/资产/空间/后期)必须在 `stage_gates` 里拿到各自的独立保真判据。没有判据的阶段会被验收循环结构性忽略——机制核心的判据覆盖不到它们,最终以"proxy 静默转正"的形式漏进成片。
+
 ## 已验证案例(可参照)
 
 - 液体水环(NeXus 风格)→ Blender GN:采样曲线+点转体积,`~/Desktop/Digital Art/blender/waterring/water_ring_nexus_style.blend`
 - 重瓣牡丹开花(RAWICE Digital Flower #013)→ Houdini Python SOP:分层花瓣+bloom_ease 时序,`~/Desktop/Digital Art/Houdini/bloom/`(详见其 PROGRESS.md)
+- 后室音频灯光(@by__nils,小红书转发)→ **hybrid**:Blender 灯光分组渲静帧层 → TD 三段分频驱动层 opacity + noise 门控;含盲测协议全程记录与路由复盘,`~/Desktop/Digital Art/reverse/xhs_test1/`(analysis.json + blind_check.md + CASE.md)

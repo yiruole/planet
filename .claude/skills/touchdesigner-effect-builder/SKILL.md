@@ -10,8 +10,14 @@ description: 在 TouchDesigner 中搭建实时视觉效果(feedback/displace/gli
 ## 0. 连接方式
 
 1. **touchdesigner MCP**(已注册,`mcp__touchdesigner__td_*`:td_health/td_connect/td_create_op/td_set_par/td_eval/td_exec 等)——先 `td_health` 检查
-2. **HTTP 后备**(MCP 连不上时,已实测):`POST localhost:9980/mcp`,**JSON 里不能有裸换行**(代码要 `\n` 转义)
-3. TD 端需要 bridge 组件在工程里运行;bridge 实体在 `Digital Art old/universe drive/touchdesigner-mcp/`(**不可移动**)
+2. **HTTP 后备**(MCP 连不上时,已实测):`POST localhost:9980/mcp`,payload `{"action":"exec|eval|health|...","args":{...}}`,**JSON 里不能有裸换行**(代码要 `\n` 转义)
+3. TD 端需要 bridge 组件在工程里运行;bridge 实体在 `Digital Art old/universe drive/touchdesigner-mcp/`(**不可移动**);带桥工程可 `open -a TouchDesigner <toe>` 启动,~15-45s 后 9980 起
+
+**桥使用纪律(backrooms audio-relight 实测)**:
+- 多行代码经桥易碎:脚本写盘,桥内只执行单行 `exec(open('/abs/path.py').read())`;结果写 JSON 文件落盘再从外部读,不依赖桥返回值
+- 桥的 exec 是 `exec(code, globals(), locals())`:**推导式 body 看不到 exec 局部变量**(Python 作用域),`{n: f(c) for n in xs}` 报 `name 'c' is not defined`——一律用普通 for 循环
+- **`project.save()` 在桥回调内死锁**(主循环被回调占用)。构建全部写成**幂等可重放脚本**(开头 destroy 再 create),保存交给用户或接受"崩了重放"
+- 桥挂死恢复:`pkill -9 -x TouchDesigner` → 重开带桥 .toe → 顺序重放构建脚本
 
 ## 1. TOP / CHOP / SOP / COMP 路线判断
 
@@ -50,7 +56,10 @@ description: 在 TouchDesigner 中搭建实时视觉效果(feedback/displace/gli
 | 症状 | 原因 | 修法 |
 |---|---|---|
 | 形状全部变圆/糊 | bloom maxRadius 过大 | 降到 <0.1 |
-| 录制的 mov 是空的/1帧 | `record=True` toggle 不写帧 | 每帧 `par.addframe.pulse()`,循环 N 次 |
+| 录制的 mov 是空的/1帧/不出文件 | `record=True` toggle 不写帧;批量场景下 addframe.pulse()+强制 cook 也不可靠(backrooms 实测) | **首选逐帧 `op('OUT').save('f%05d.jpg' % f)` + ffmpeg 合成**(自带强制 cook;1260 帧实测 15s);moviefileout 只用于实时播放录制 |
+| 乱序 scrub 采样 CHOP 值不可信 | lag/analyze 等 timesliced CHOP **有状态**,值依赖 cook 历史,同一帧三次读出三个值 | 校准/统计采样必须从帧 1 顺序步进;乱序 scrub 得到的统计直接作废 |
+| 声画响应慢半拍(约 5-10 帧系统延迟) | lag CHOP 的 release(lag2)把响应质心整体后移 | 响应型信号 lag2 ≤0.1s;要"亮灯保持"效果用阈值后闩锁(threshold→hold),别靠大 release 硬拖 |
+| 批量导出全是同一帧/画面不动 | TD 惰性求值,无 viewer 拉动就不 cook | 逐帧导出用 TOP.save(强制 cook);读 CHOP 值本身也会触发 cook |
 | GLSL TOP 里时间不动 | GLSL TOP 无 TDTime uniform | 自建 uniform,`me.time.seconds` 经 vec 传入 |
 | 文字看不见 | Text TOP 默认分辨率/points 字号 | custom 分辨率 + pixels 单位字号;add 模式合成 |
 | 透明物体渲染成实心/黑块 | blend/depth 设置不全 | sa/omsa/depthwriting=False 三件套 |
@@ -70,3 +79,4 @@ description: 在 TouchDesigner 中搭建实时视觉效果(feedback/displace/gli
 
 - **魔方全息**(完整闭环,含 30s 录制):工程与 GLSL 源码记录在 git 历史 `Desktop/TD/PROGRESS.md`(文件已删但 `git show eef4e80:Desktop/TD/PROGRESS.md` 可取);录制成品 rubik_hologram_30s.mov
 - **liquid chrome**:`~/Desktop/Digital Art/TD/transball/liquid_chrome.toe`(REGEN.Prod 复刻)
+- **backrooms audio-relight**(hybrid:Blender 光层底板 × TD 分频混合,测试1完整闭环):工程 `~/Desktop/Digital Art/reverse/xhs_test1/audio_relight.toe`,幂等构建脚本 td_c1/c2/c3.py,全程与私有参数见同目录 CASE.md
