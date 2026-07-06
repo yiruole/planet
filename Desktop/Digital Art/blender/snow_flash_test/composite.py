@@ -152,4 +152,22 @@ for i in range(N):
     if t >= reveal_t:
         # snowfall only in state B
         snow = draw_snow(t - reveal_t + 3.0)
-        frame = np.maximum(frame, snow[..., None] * np.arra
+        frame = np.maximum(frame, snow[..., None] * np.array([248, 250, 255], np.float32))
+        # grain
+        frame += rng.normal(0, 2.6, (H, W, 1)).astype(np.float32)
+
+    f = flash_amount(t)
+    if f > 0:
+        # screen-blend wash, then lift to white at peak
+        frame = 255 - (255 - frame) * (255 - WASH * f) / 255
+        frame = frame + (255 - frame) * (f ** 2.2) * 0.92
+
+    # gentle vignette
+    r2 = ((xx / W - 0.5) ** 2 + (yy / H - 0.5) ** 2) * 2.2
+    frame *= (1.0 - 0.18 * np.clip(r2 - 0.35, 0, 1))[..., None]
+
+    enc.stdin.write(np.clip(frame, 0, 255).astype(np.uint8).tobytes())
+
+enc.stdin.close()
+enc.wait()
+print("COMPOSITE DONE", OUT, N, "frames")

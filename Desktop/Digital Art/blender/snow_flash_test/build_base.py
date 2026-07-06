@@ -173,4 +173,11 @@ front.data.energy = 0
 bg.inputs['Strength'].default_value = 0.85
 render(OUT + '/base_A.png')
 
-# ----- state
+# ----- state B: bright front-lit -----
+moon.data.energy = 2.0
+front.data.energy = 900
+bg.inputs['Strength'].default_value = 1.15
+render(OUT + '/base_B.png')
+
+bpy.ops.wm.save_as_mainfile(filepath=OUT + '/snow_scene.blend')
+print('BUILD DONE')
