@@ -80,5 +80,5 @@ Markdown 报告 + 同目录 `analysis.json`:
 
 ## 已验证案例(可参照)
 
-- 液体水环(NeXus 风格)→ Blender GN:采样曲线+点转体积,`~/Desktop/Digital Art/water_ring_nexus_style.blend`
+- 液体水环(NeXus 风格)→ Blender GN:采样曲线+点转体积,`~/Desktop/Digital Art/blender/waterring/water_ring_nexus_style.blend`
 - 重瓣牡丹开花(RAWICE Digital Flower #013)→ Houdini Python SOP:分层花瓣+bloom_ease 时序,`~/Desktop/Digital Art/Houdini/bloom/`(详见其 PROGRESS.md)
