@@ -41,7 +41,14 @@ python3 ~/.claude/skills/reference-reverse-engineer/scripts/media_inspect.py <vi
 
 逐项过(无信息就标 UNKNOWN):composition / camera(机位、运动、焦距感)/ lens & perspective / motion(什么在动、驱动方式)/ geometry(建模 vs 程序化 vs 实拍)/ material(BRDF 特征、SSS、透明)/ lighting(光源数、方向、软硬、色温)/ simulation clues(物理正确性、噪波特征、循环)/ temporal structure(节奏、循环、剪辑)/ compositing(层、遮罩、混合痕迹)/ post(调色、颗粒、bloom、暗角)/ sound-image relation(若有声)/ likely pipeline。
 
+### 3.5 音频证据(有声视频必查)
+
+`ffmpeg -af "astats=metadata=1:reset=15,ametadata=print:key=lavfi.astats.Overall.RMS_level:file=-" -f null -` 提取 RMS 包络。响度突变(±10dB 以上)与视觉事件的时间差 <2 帧 = 刻意声画同步(OBSERVED 级证据)。转场、闪光、切换类效果先查这个。
+
 ### 4. 判别启发(积累中,遇新模式就补充)
+
+- **状态切换合成 vs 连续动画**:效果前后两个状态的场景内容若逐像素一致(构图/物体零位移,只有光与叠加层变化)→ 底板+合成结构,复刻时应做"同底板多状态+时序合成"而非连续 3D 动画(省一个数量级的工作量)
+- **light-leak/胶片灼烧转场**:全画面彩色渐变压下且场景在光下保持不动(无新增投影)= 合成层滤色,不是场景内光源
 
 - **3D 渲染 vs 实拍**:高光滚动是否符合物理、边缘是否过于干净、景深虚化形状、噪点类型(渲染噪 vs 传感器噪)
 - **程序化 vs 手工**:重复元素是否有统计一致性(程序化=同分布随机,手工=刻意变化)

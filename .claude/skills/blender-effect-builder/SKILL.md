@@ -7,7 +7,9 @@ description: 在 Blender 中搭建视觉效果(Geometry Nodes 程序化/材质/�
 
 前置:遵守 `~/.claude/skills/creative-rules/`。基于水环案例(NeXus Follow Curve 复刻)实测提炼。本机 Blender 5.1.2。
 
-## 0. 连接方式(两条通道)
+## 0. 连接方式(三条通道)
+
+0. **无头脚本循环**(Blender 未运行/批量迭代首选,已两次实测):把建场景+渲染写成一个 `build_x.py`,`blender -b --python build_x.py -- <outdir>` 一条命令完成"改脚本→重建→渲帧"整轮迭代,完全可 git 管理。注意:无头下部分 bpy.ops 缺 context(如 shade_smooth),用数据 API 替代(逐 polygon `use_smooth=True`)
 
 1. **blender MCP**(`mcp__blender__*`,uvx blender-mcp,user scope 已注册)——新会话可用
 2. **Socket 直连**(MCP 未加载时的后备,已实测):Blender 插件 `blender_mcp_addon.py`(已装,监听 `localhost:9876`),协议 `JSON {"type": "execute_code", "params": {"code": "..."}}`,一次 socket 连接一条命令,读到完整 JSON 为止
@@ -42,6 +44,10 @@ description: 在 Blender 中搭建视觉效果(Geometry Nodes 程序化/材质/�
 - 表面波动:4D Noise scale 1.6–2.2,振幅 0.32–0.5(W=frame×0.06 驱动流动感)
 - 流速 0.004/帧 ≈ 250 帧一整圈无缝循环
 - 粗细起伏:低频 Noise(scale 0.55)→ Map Range 0.55–1.5 乘到半径
+
+**夜景/暗调场景**
+- ⚠️ AgX 色彩变换会把低值压黑:想在成片里读出"深蓝夜空",世界/材质数值要比直觉亮 3–5 倍;渲完必须看图,别信数值
+- 渲染端补救太贵时可在合成端做亮度遮罩提升(暗部+画面上部 → 加深蓝),先加(lift)后乘,乘法分级救不了近 0 值
 
 **水/透明材质(Eevee)**
 - ⚠️ **透明材质在暗环境里 = 隐形/像黑岩石**(实测教训):world 至少 (0.12,0.15,0.18)×1.2,或给强反射对象;先调环境再怀疑材质
