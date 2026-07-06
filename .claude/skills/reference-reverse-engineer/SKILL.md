@@ -69,7 +69,9 @@ Markdown 报告 + 同目录 `analysis.json`:
   "unknown": [""],
   "pipelines": [{"route": "", "tools": [""], "pros": [""], "cons": [""], "est_effort": ""}],
   "recommended": {"route": "", "reason": ""},
-  "mvp": {"goal": "", "steps": [""], "success_criteria": ""},
+  "mvp": {"goal": "", "steps": [""],
+          "success_criteria": {"mechanism_gate": "机制可辨识对应的判据",
+                               "fidelity_gate": "保真维度判据(必填,见 creative-rules/fidelity-rules.md;机制达标≠完成)"}},
   "route_to_skill": "houdini-effect-builder|blender-effect-builder|touchdesigner-effect-builder|footage-transform-lab|none"
 }
 ```
