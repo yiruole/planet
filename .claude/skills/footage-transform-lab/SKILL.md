@@ -46,9 +46,21 @@ python3 ~/.claude/skills/footage-transform-lab/scripts/motion_trace.py <video> \
 | echo 模式画面发白 | 亮度无界累积 | strength↓ decay↓ |
 | 输出打不开 | 分辨率奇数 | 编码端已 yuv420p,若源是奇数宽高先 `scale=ceil(iw/2)*2:ceil(ih/2)*2` |
 
+### 区域遮罩时变位移场 —— "静物活化 / living painting"(AE video2 实测)
+
+单帧(或静止镜头)→ 指定区域内容持续微幅重排,区域外(边框/墙/背景)零位移。适用:让画/照片/织物"活起来",复刻"刚性边界静止、内容呼吸换位"类参考。
+
+配方(numpy+scipy,模板 `~/Desktop/Digital Art/AE/video2/results/mvp/living_painting_mvp.py`):
+- 粗网格(约 10x6)随机位移场,**每 K 帧生成新 key field + smoothstep 时域插值**(K=9–12)。离散换场给"重排/stop-motion 感";连续正弦驱动只会得到"果冻晃动",不是同一效果身份
+- bicubic `zoom` 上采样到画幅 → `map_coordinates` 双线性重采样(半分辨率迭代,秒级/百帧)
+- 位移乘以**软遮罩**(矩形+gaussian feather σ≈7):遮罩必须收到内容区内沿——feather 半径会向外渗出,σ14 时画框仍会波浪形变形
+- 幅度先小后校:用 `tblend=difference,signalstats` YAVG 均值对标参考,**按运动区域占画面比例归一再比较**(区域占 42% 时,整幅 2.5 ≈ 参考满幅 6.0)
+
+验收必看**帧差图**(f0 vs f60 difference):应动区域亮、应静区域(边框/背景)全黑——遮罩渗漏在成片里肉眼难察觉,帧差图一眼暴露。
+
 ## 探索方向(未实现,逐个由真实创作需求驱动)
 
-footage as field / membrane 形变 / optical-flow displacement / depth 空间重投影 / 不可能的连续性 / 区域属性交换。每个方向做成独立小脚本,不做大框架。
+footage as field / membrane 形变 / optical-flow displacement / depth 空间重投影 / 不可能的连续性 / 区域属性交换 / 位移场量化+patch 重排(把"流动感"升级为真"跳位重排")。每个方向做成独立小脚本,不做大框架。
 
 ## 边界
 
