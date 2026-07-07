@@ -4,6 +4,13 @@
 管线:Blender 灯光分组静帧层 → TD 三段分频 + noise 门控混合 → TD 后期 → 图像序列导出。
 通用经验已反写 fidelity-rules / reference-reverse-engineer / touchdesigner-effect-builder;**本文件只存本案例私有参数与过程事实**。
 
+## 高保真升级(3 轮,2026-07-07 晚)
+
+- **R1 资产语义**:`build_scene_v2.py`——8 种程序化家具原型(椅/办公椅/桌/扶手椅/抽屉柜/台灯/木板/凳)+ bevel + 程序磨损材质(noise 色斑 + AO 脏 + roughness 方差)+ 天花板灯板方差与坏灯。**刚体 settle 走了 4 次失败**(互穿爆炸/穿透/ kinematic 顶穿,物体被弹到数百米外;headless Bullet 堆叠是工程黑洞),改**确定性堆叠放置**(中心密度采样+支撑高度查询+倾斜抖动+嵌入下沉),40/40 成功。另修 join 陷阱:join 保留 active 件非均匀 scale,后续覆盖 scale 会把腿拉成 8 米——join 后必须 `transform_apply(scale=True)`
+- **R2 密度/构图/色调**:62 件、中心密度 u^0.5、footprint×0.6、sink 0.2、木色调暗,相机推近 (0,-5.35,1.02)
+- **R3 收尾**:织物/皮革再暗、堆顶上限 3.0、墙偏黄、TD 加 HALO(bright-pass→blur→add 0.5)、fluo 阈值 0.012→0.010(重启后闪光密度掉到 6 次,调回 17 次)
+- 成片 `audio_relight_v7_final.mp4`;对比图在 `compare/`(A 参考/B 旧/C 新、rounds_progression、E_hero_1440)
+
 ## 状态(截至测试 1 收束)
 
 - 机制:层混合/音频驱动/状态闪烁成立;v5 为当前最佳(`audio_relight_v5.mp4`)
