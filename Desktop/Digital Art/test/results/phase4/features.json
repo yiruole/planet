@@ -1,0 +1,20 @@
+{
+ "duration_s": 18.64,
+ "feature_fps": 30,
+ "n_frames": 556,
+ "transient_count": 54,
+ "transient_rate_per_s": 2.9,
+ "silence_ratio": 0.52,
+ "centroid_mean_hz": 1702.6,
+ "centroid_p10_p90": [
+  544.6,
+  2389.1
+ ],
+ "band_energy_ratio_low_mid_high": [
+  0.396,
+  0.257,
+  0.342
+ ],
+ "repetition_period_frames": 119,
+ "repetition_period_s": 3.967
+}
