@@ -58,6 +58,18 @@ python3 ~/.claude/skills/footage-transform-lab/scripts/motion_trace.py <video> \
 
 验收必看**帧差图**(f0 vs f60 difference):应动区域亮、应静区域(边框/背景)全黑——遮罩渗漏在成片里肉眼难察觉,帧差图一眼暴露。
 
+### 2.5D 面片投影 —— footage 贴 3D 几何(AE video1 人脸手风琴实测)
+
+把视频逐帧切条/切块,贴到程序定义的 3D 面片组(手风琴/折页/卡片扇)上做真透视投影——**不需要 Blender**,纯 numpy 在秒级/帧完成,素材保持"活的"(逐帧取源视频,不是静帧贴图)。
+
+配方(模板 `~/Desktop/Digital Art/AE/video1/results/mvp/face_accordion_mvp.py`):
+- 几何:面板顶点链显式构造(手风琴 = x 前进 + z 交替 zigzag),折角/整体 yaw 用 t 的正弦驱动
+- 投影:每面板 4 点对应 SVD 解 homography → 3x3 逆矩阵 → 目标 bbox 网格逆映射 `map_coordinates`;按相机空间深度**远→近**绘制解决遮挡
+- **立体感主要来自明暗交替,不是透视**:光源必须偏侧向(正面光下相邻面板 dot 几乎相同,zigzag 读不出来);shade 底 ≈0.55——再低背光面变剪影,内容不可读(两端都实测踩过)
+- 逐帧成本:8 面板 540x960 约 0.5s/帧,120 帧 ≈1min
+
+边界:需要人物抠像(内容与背景分离)时本配方到顶——segmentation 是 ML 缺口,精细 roto 归 AE。
+
 ## 探索方向(未实现,逐个由真实创作需求驱动)
 
 footage as field / membrane 形变 / optical-flow displacement / depth 空间重投影 / 不可能的连续性 / 区域属性交换 / 位移场量化+patch 重排(把"流动感"升级为真"跳位重排")。每个方向做成独立小脚本,不做大框架。
