@@ -92,6 +92,10 @@ Markdown 报告 + 同目录 `analysis.json`:
 
 **非核心侧不许降级**:判定"机制核心"归属某软件后,其余阶段(底板/资产/空间/后期)必须在 `stage_gates` 里拿到各自的独立保真判据。没有判据的阶段会被验收循环结构性忽略——机制核心的判据覆盖不到它们,最终以"proxy 静默转正"的形式漏进成片。
 
+**分析阶段就估 asset ceiling**:输出 pipelines 时,对每条路线标注资产复杂度等级——`原语可达 / 程序化组装可达 / 需真资产(kitbash/扫描/AI) / 需实拍`。判据:参考物体是否有二级形态(塌陷/褶皱/弧面/破损)、非凸拓扑、表面历史。等级为"需真资产"而路线只给了程序化方案时,est_effort 里必须写明这个 ceiling 和到顶后的升级路径——不要等三轮迭代后才发现天花板(backrooms 案例教训)。
+
+**成像链是分析对象**:第 3 步分析维度里的 lens/post 不是选填——低清/压缩参考的噪声结构、涂抹、黑位、色偏属于效果身份,必须出 OBSERVED 条目,复刻侧对应 imaging pipeline 阶段(见 fidelity-rules §镜头形成链)。
+
 ## 已验证案例(可参照)
 
 - 液体水环(NeXus 风格)→ Blender GN:采样曲线+点转体积,`~/Desktop/Digital Art/blender/waterring/water_ring_nexus_style.blend`

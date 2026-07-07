@@ -13,7 +13,11 @@ description: 在 TouchDesigner 中搭建实时视觉效果(feedback/displace/gli
 2. **HTTP 后备**(MCP 连不上时,已实测):`POST localhost:9980/mcp`,payload `{"action":"exec|eval|health|...","args":{...}}`,**JSON 里不能有裸换行**(代码要 `\n` 转义)
 3. TD 端需要 bridge 组件在工程里运行;bridge 实体在 `Digital Art old/universe drive/touchdesigner-mcp/`(**不可移动**);带桥工程可 `open -a TouchDesigner <toe>` 启动,~15-45s 后 9980 起
 
+**成像管线配方(backrooms 实测,复刻"拍出来的"质感)**:mix → HALO(level blacklevel 0.72→blur 34→level 0.5→add)→ SOFT(blur 2.0,吃掉 CG 锐边)→ CHROMA(彩色 noise add 0.035,色度噪声)→ TONE(level outlow 0.03–0.045 抬黑位 + inhigh 0.96 高光滚降)→ GRAIN(mono noise add 0.06)→ HSV(hueoffset 微调色偏)。顺序重要:halation 在软化前,grain 在最后。
+
 **桥使用纪律(backrooms audio-relight 实测)**:
+- 桥会**空闲挂死**(idle 数十分钟后 health 超时,TD 进程还活着;疑 App Nap)。长流程每步前查 health;挂死即走恢复流程,别调试
+- 恢复流程标准化的前提:**所有构建/修正脚本编号存盘(c1…fixN),全部幂等**,恢复 = 重启 TD + 顺序重放,30 秒内回到现场
 - 多行代码经桥易碎:脚本写盘,桥内只执行单行 `exec(open('/abs/path.py').read())`;结果写 JSON 文件落盘再从外部读,不依赖桥返回值
 - 桥的 exec 是 `exec(code, globals(), locals())`:**推导式 body 看不到 exec 局部变量**(Python 作用域),`{n: f(c) for n in xs}` 报 `name 'c' is not defined`——一律用普通 for 循环
 - **`project.save()` 在桥回调内死锁**(主循环被回调占用)。构建全部写成**幂等可重放脚本**(开头 destroy 再 create),保存交给用户或接受"崩了重放"

@@ -56,6 +56,14 @@ description: 在 Blender 中搭建视觉效果(Geometry Nodes 程序化/材质/�
 
 **渲染**:Eevee 960×540 单帧秒级~分钟级,迭代用它;Cycles 只在需要真 GI/SSS 质量时上
 
+**镜头形成链套件(backrooms 实测,"像不像同一个镜头"的大头)**:复刻实拍感时,资产调三轮不如成像链一轮——
+- 体积雾:大 cube + Principled Volume(density ~0.012, anisotropy 0.25),立刻有纵深分离
+- DOF:`cam.data.dof.use_dof=True` + focus 到主体 + f/2.5,背景标志物变奶油
+- 回光代理:Eevee 无真 GI 弹射,两盏大面积低能量侧墙 area light 冒充墙面回光
+- 磨损材质配方:noise→ColorRamp 色斑 + AO(distance 0.6)乘进 albedo 当缝隙脏 + noise→roughness 方差 + 高频 noise→Bump(0.12)微法线 + 部分件加 Coat 0.18 出高光池
+- 灯具阵列打方差:每盏发光强度 ×random(0.55–1.35) + 挑 2–3 盏坏灯,均匀阵列=一眼假
+- 剩下的"脏"(传感器噪声/压缩涂抹/黑位/halation)属于合成端,交给 TD/后期(见 touchdesigner-effect-builder 成像链)
+
 ## 4. MVP 与迭代
 
 首版 = 静帧 + 灰模/基础材质,确认形态;第二版加材质灯光;动画验证渲 2–3 个错开的帧(如 f60/f140)确认运动连续。每轮 ≤3 个变量。
@@ -70,6 +78,8 @@ description: 在 Blender 中搭建视觉效果(Geometry Nodes 程序化/材质/�
 | 表面碎块状不连贯 | 点太少/散布太大/voxel 太粗 | 点数↑、散布↓、voxel↓ 三管齐下 |
 | socket 桥无响应 | Blender 端服务未启动 | N 面板 BlenderMCP → Connect;检查 9876 端口 |
 | MCP 工具不存在 | 服务器注册后未重启会话 | 用 socket 直连,或新开会话 |
+| join 后再设 scale,部件被拉成数米长 | join 保留 active 件的**非均匀 scale**,其余几何被反变换进该局部空间,后设 scale 时爆掉 | join 后立即 `transform_apply(scale=True)` 再 origin_set(backrooms 实测:椅腿变 8 米) |
+| 无头刚体堆叠:物体弹飞数百米/穿地板/只剩零星几件 | 生成互穿→solver 爆炸;高速下落穿透薄地板;kinematic 分波释放被下方堆顶穿(无限质量深接触) | **headless Bullet 堆叠 = 工程黑洞,4 连败后弃用**。改确定性堆叠:中心密度采样(r=R·u^0.5)+ 支撑高度查询 + 倾斜抖动 + 0.2·dz 嵌入下沉,大件先放(底层),构造上保证重力合理 |
 
 ## 6. 边界:什么时候不用 Blender
 
@@ -81,3 +91,4 @@ description: 在 Blender 中搭建视觉效果(Geometry Nodes 程序化/材质/�
 ## 7. 案例库
 
 - **水环**(完整闭环):`~/Desktop/Digital Art/blender/waterring/water_ring_nexus_style.blend`,GN 节点组 `WaterRingGN`,复刻自 NeXus Follow Curve 教程效果
+- **backrooms 家具堆光层底板**(程序化语义资产+确定性堆叠+镜头形成链):`~/Desktop/Digital Art/reverse/xhs_test1/build_scene_v3.py`(8 种家具原型/磨损材质/雾/DOF/灯阵方差),过程与教训见同目录 CASE.md

@@ -11,6 +11,14 @@
 - **R3 收尾**:织物/皮革再暗、堆顶上限 3.0、墙偏黄、TD 加 HALO(bright-pass→blur→add 0.5)、fluo 阈值 0.012→0.010(重启后闪光密度掉到 6 次,调回 17 次)
 - 成片 `audio_relight_v7_final.mp4`;对比图在 `compare/`(A 参考/B 旧/C 新、rounds_progression、E_hero_1440)
 
+## Shot reconstruction 阶段(2 轮,2026-07-07 深夜)
+
+R3 被判为失败样本重新诊断:**语义内容已对上,摄影成像链没对上**。路线判决 HYBRID(保留场景重建+时间机制,新增镜头形成链),独立版本 `build_scene_v3.py` + `plates_v3/`,R3 基线未动。
+- **Round A(成像链)**:Blender 体积雾 0.012 + DOF f/2.5 + 墙面回光 area×2 + 亮态曝光平台上调(fluo 105·k/emit 3.1·k,色偏黄绿)+ 木材 Coat 高光池 + AO 加深;TD 端 SOFT(blur 2.0)+CHROMA(0.035)+TONE(outlow 0.03/inhigh 0.96)+HSV(hue+4)。**单轮增益超过全部资产轮**
+- **Round B(形态+二级形)**:弯木板条椅背(5 slat 弧列)、全材质微法线 Bump 0.12、大件先放宽底(big-first r2.15/u^0.55)、堆顶 2.7
+- 成片 `audio_relight_v9_final.mp4`;四联对比 `compare/final_ABCD_lit/dark.png`;hero `compare/F_newpipe_hero_1440.png`
+- 桥挂死本阶段又发生 3 次,恢复流程(重启+编号脚本重放)每次 <1 分钟,验证了幂等纪律的价值
+
 ## 状态(截至测试 1 收束)
 
 - 机制:层混合/音频驱动/状态闪烁成立;v5 为当前最佳(`audio_relight_v5.mp4`)
