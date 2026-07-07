@@ -1,0 +1,13 @@
+{
+ "n_frames": 248,
+ "fps": 30,
+ "pulse_period_s": 0.267,
+ "area_range_px": [
+  9598,
+  47678
+ ],
+ "complexity_range": [
+  2.34,
+  4.2
+ ]
+}
