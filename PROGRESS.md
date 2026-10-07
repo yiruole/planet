@@ -18,14 +18,14 @@ Multi-page HTML/CSS portfolio for Ruole Yi. Vanilla HTML — no framework. Share
 ```
 web/
 ├── index.html              ← homepage (name, physicist/artist, bio, section links)
-├── oil-painting.html       ← 17 oil paintings with descriptions + lightbox
+├── oil-painting.html       ← 18 oil paintings with descriptions + lightbox
 ├── digital-art.html        ← 2 works (local .MOV files with controls)
 ├── experimental-film.html  ← placeholder
 ├── photography.html        ← placeholder
 ├── music.html              ← placeholder
 ├── style.css               ← shared: nav, footer, reveal, mobile menu, page header
 ├── PROGRESS.md             ← this file
-├── 油画/                   ← 17 JPGs (0–15, 00)
+├── 油画/                   ← 18 JPGs (0–16, 00)
 ├── 数字艺术/               ← output_16x9.MOV (Work I), 111.MOV (Work II)
 └── 摄影/                   ← empty — photos not yet added
 ```
@@ -59,6 +59,10 @@ web/
 - Work II (111.MOV): removed muted/autoplay, added controls so sound plays
 - Oil painting images scaled to 65% of previous size (Layout A: max-width 559px, B/C: max-width 832px)
 
+### Session 6 — 2026-10-07 — New painting
+- Added painting 18, "The Fracture of Language" (语言的断裂), 16.jpg, Sep. 4, 2026, Layout C; counters updated to "/ 18" and "18 works"
+- Canvas size not yet provided (left out of the caption line)
+
 ---
 
 ## Painting Descriptions Status
@@ -82,6 +86,7 @@ web/
 | 15 | 14.jpg | The Summit | ✓ |
 | 16 | 15.jpg | Untitled | ✓ |
 | 17 | 00.jpg | The Room of the Split Subject | ✓ |
+| 18 | 16.jpg | The Fracture of Language | ✓ |
 
 ---
 
